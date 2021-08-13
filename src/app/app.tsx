@@ -27,7 +27,6 @@ const App = () => {
         <Route exact path="/projectList" component={ProjectList} />
         <Route exact path="/project/:project" component={ProjectOverview} />
         <Route exact path="/project/:project/cue/:cue" component={CueEditor} />
-        <Route exact path="/properties/:project/:cue/:layer" component={PropertiesWindow} />
         <Route exact path="/player" component={ProjectSelector} />
         <Route exact path="/player/:project" component={Player}/>
       </Switch>

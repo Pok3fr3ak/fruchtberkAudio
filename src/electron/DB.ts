@@ -196,8 +196,13 @@ class DB {
         }
 
         const layer = cueName.files.find(x => {
+            console.log(x.name, name, x.name === name);
+            
             return x.name === name
         })
+
+        console.log(layer);
+        
 
         if (layer) {
             return layer;

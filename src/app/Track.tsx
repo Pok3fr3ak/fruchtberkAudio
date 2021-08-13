@@ -2,6 +2,7 @@ import { Layer, db } from "@/electron/DB";
 import { ipcRenderer } from "electron";
 import React, { useState, useEffect } from "react";
 import useResizeObserver from 'use-resize-observer';
+import { PropertiesWindow } from "./PropertiesWindow";
 
 export const Track = (props: any) => {
 
@@ -18,6 +19,8 @@ export const Track = (props: any) => {
   const [start, setStart] = useState(layer.start);
   const [length, setLength] = useState(layer.duration);
 
+  const [propertiesActive, setPropertiesActive] = useState(false);
+
   const { ref } = useResizeObserver<HTMLDivElement>({
     onResize: ({ width, height }) => {
       if (width) {
@@ -31,21 +34,21 @@ export const Track = (props: any) => {
   const evListenerFADEIN = (ev: any) => {
     ev.target.requestPointerLock();
     console.log(ev.clientX, ev);
-    layer.fadeIN += ev.movementX * (1/scale);
+    layer.fadeIN += ev.movementX * (1 / scale);
     console.log(layer);
     setFadeInLength(layer.fadeIN);
   }
 
   const evListenerFADEOUT = (ev: any) => {
     ev.target.requestPointerLock();
-    layer.fadeOUT += ev.movementX * -1 * (1/scale);
+    layer.fadeOUT += ev.movementX * -1 * (1 / scale);
     console.log(ev.clientX, ev);
     setFadeOutLength(layer.fadeOUT);
   }
 
   const evListenerMOVE = (ev: any) => {
     ev.target.requestPointerLock();
-    layer.start += ev.movementX * (1/scale);
+    layer.start += ev.movementX * (1 / scale);
     setStart(layer.start)
     console.log('start is: ', layer.start);
   }
@@ -102,13 +105,22 @@ export const Track = (props: any) => {
               db.save();
               ev.target?.removeEventListener('mousemove', evListenerMOVE);
               document.exitPointerLock();
-            }, {once:true})
+            }, { once: true })
           }}
-          onDoubleClick={(ev)=>{
+          onDoubleClick={(ev) => {
             //ipcRenderer.send('open-layerProperties', `${params.project}+${params.cue}+${layer.name}`)
-            //Implement Popup
+            setPropertiesActive(true);
           }}
         >{layer.name}</p>
+        {
+          propertiesActive ? 
+          <PropertiesWindow
+            project={params.project}
+            cue={params.cue}
+            layer={layer}
+          />
+            : <></>
+        }
         <div className="fade fadeOut" style={{ width: fadeOutLength * scale }}>
           <div className="fadeContent">
             <div

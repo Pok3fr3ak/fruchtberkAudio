@@ -1,17 +1,13 @@
-import { db } from "@/electron/DB";
+import { db, Layer } from "@/electron/DB";
 import React, { useState } from "react"
 
 export const PropertiesWindow = (props: any) => {
 
-    const prj = props.match.params.project;
-    const cue = props.match.params.cue;
-    const lyr = props.match.params.layer;
-
-    console.log(prj, cue, lyr);
-    
-    const layer = db.getLayer(prj, cue, lyr);
-    console.log(layer);
-    
+    const prj = props.project;
+    const cue = props.cue;
+    const lyr: Layer = props.layer;
+   
+    const layer = db.getLayer(prj, cue, lyr.name);
 
     const [start, setStart] = useState(layer.start);
     const [duration, setDuraton] = useState(layer.duration);
