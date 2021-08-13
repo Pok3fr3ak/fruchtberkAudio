@@ -31,9 +31,10 @@ export const Player = (props: any) => {
                     {
                         pairs.map((x, i) => {
                             return (
-                                <Pair
+                                <Group
                                     key={i}
                                     index={i + 1}
+
                                 />
                             )
                         })
@@ -48,56 +49,53 @@ export const Player = (props: any) => {
     )
 }
 
-const Pair = (props: any) => {
-
-    const [leftCue, setLeftCue] = useState<Cue>();
-    const [rightCue, setRightCue] = useState<Cue>();
-
-    const [leftActive, setLeftActive] = useState(false);
-    const [rightActive, setRightActive] = useState(false);
+const Group = (props: any) => {
 
     const { selectionActive, setSelectionActive, selected, setSelected } = useContext(SelectionContext);
 
-    const selector = (ID: number) => {
-        //setSelected(ID);
-        console.log(selected);
-    }
-
-    const setActive = (left = true) => {
-        if (left === true) {
-            setRightActive(false);
-            setLeftActive(!leftActive);
-        } else {
-            setLeftActive(false);
-            setRightActive(!rightActive);
-        }
-    }
-
-    useEffect(() => {
-        console.log(selectionActive);
-        if (leftActive === true || rightActive === true) {
-            setSelectionActive(true);
-        } else {
-            setSelectionActive(false);
-        }
-    }, [leftActive, rightActive])
-
     return (
         <div>
-            <div
-                className={`leftCue ${leftActive ? 'active' : 'idle'} test`}
-                onClick={() => {
-                    /* selector(lID) */
-                    setActive();
-                }}
-            ></div>
-            <div
-                className={`rightCue ${rightActive ? 'active' : 'idle'} test`}
-                onClick={() => {
-                    /* selector(rID) */
-                    setActive(false);
-                }}
-            ></div>
+            <Node
+                index={4}
+
+            />
+            <Node
+                index={5}
+            ></Node>
+        </div>
+    )
+}
+
+const Node = (props: any) => {
+    const [cue, setCue] = useState<Cue>();
+    const [active, setActive] = useState(false);
+
+    const { selectionActive, setSelectionActive, selected, setSelected } = useContext(SelectionContext);
+
+    useEffect(()=>{       
+        if(selected !== props.index){
+            setActive(false)
+        }
+    }, [selected])
+
+    useEffect(()=>{
+        if(selected === props.index && active === false){
+            setSelected(0)
+            setSelectionActive(false)
+        }
+    }, [active])
+
+    return (
+        <div
+            className={`leftCue ${active ? 'active' : 'idle'} test`}
+            onClick={() => {
+                /* selector(lID) */
+                setSelected(props.index);
+                setActive(!active);
+                if(selectionActive === false && active === false){
+                    setSelectionActive(true)
+                }
+            }}>
         </div>
     )
 }
@@ -131,7 +129,3 @@ const Selector = (props: any) => {
     )
 
 }
-
-/* ${selected === lID ? 'active' : 'idle'} */
-
-/* ${selected === rID ? 'active' : 'idle'} */

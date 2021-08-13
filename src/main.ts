@@ -1,15 +1,26 @@
-import { app, BrowserWindow, dialog, ipcMain, webContents } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, protocol, webContents } from 'electron';
 import contextMenu from 'electron-context-menu';
 import { appManager } from './electron/AppManager';
 import { db } from './electron/DB';
 import { ProjectOverview } from './electron/ProjectOverview';
 import { PropertiesTab } from './electron/PropertiesTab';
+import installExtention, {REACT_DEVELOPER_TOOLS} from 'electron-devtools-installer';
 
 const appElements: any = {
     windows: []
 };
 
 app.on('ready', () => {
+    protocol.registerFileProtocol('file', (request, cb) => {
+        const url = request.url.replace('file:///', '')
+        const decodedUrl = decodeURI(url)
+        try {
+          return cb(decodedUrl)
+        } catch (error) {
+          console.error('ERROR: registerLocalResourceProtocol: Could not get file path:', error)
+        }
+      })
+
     appManager.setWindow('Projects', new ProjectOverview());
 
 
@@ -45,3 +56,8 @@ app.on('ready', () => {
     })
 });
 
+app.whenReady().then(()=>{
+    installExtention(REACT_DEVELOPER_TOOLS)
+    .then((name) => console.log(`Added Extension:  ${name}`))
+    .catch((err) => console.log('An error occurred: ', err))
+})

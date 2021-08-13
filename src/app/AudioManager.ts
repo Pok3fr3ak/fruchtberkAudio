@@ -130,7 +130,7 @@ class CuePlayer {
     }
 
     stopCue() {
-        console.trace();
+        //console.trace();
         this.time = 0;
         this.currentlyPlaying = false;
         window.clearInterval(this.starterFunctionID);

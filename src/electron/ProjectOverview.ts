@@ -14,7 +14,8 @@ export class ProjectOverview {
       height: 720,
       show: true, // This will show the window on launch time.
       webPreferences: {
-        nodeIntegration: true
+        nodeIntegration: true,
+        webSecurity: false
       }
     })
 
