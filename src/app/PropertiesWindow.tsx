@@ -7,8 +7,11 @@ export const PropertiesWindow = (props: any) => {
     const cue = props.match.params.cue;
     const lyr = props.match.params.layer;
 
+    console.log(prj, cue, lyr);
+    
     const layer = db.getLayer(prj, cue, lyr);
-
+    console.log(layer);
+    
 
     const [start, setStart] = useState(layer.start);
     const [duration, setDuraton] = useState(layer.duration);

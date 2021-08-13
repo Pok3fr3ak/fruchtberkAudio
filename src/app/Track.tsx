@@ -105,7 +105,8 @@ export const Track = (props: any) => {
             }, {once:true})
           }}
           onDoubleClick={(ev)=>{
-            ipcRenderer.send('open-layerProperties', `${params.project}+${params.cue}+${layer.name}`)
+            //ipcRenderer.send('open-layerProperties', `${params.project}+${params.cue}+${layer.name}`)
+            //Implement Popup
           }}
         >{layer.name}</p>
         <div className="fade fadeOut" style={{ width: fadeOutLength * scale }}>

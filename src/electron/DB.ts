@@ -12,8 +12,8 @@ export interface Phase {
 }
 
 export class Layer {
-    filePath: String;
-    name: String;
+    filePath: string;
+    name: string;
     start: number;
     duration: number;
     //maxDuration: number;
@@ -28,7 +28,7 @@ export class Layer {
 
     loop: boolean;
 
-    constructor(filePath: String, name?: String, length?: number) {
+    constructor(filePath: string, name?: string, length?: number) {
         this.filePath = filePath;
         this.name = this.extractFilename(filePath) || filePath;
         this.start = 0;
@@ -50,11 +50,11 @@ export class Layer {
         this.changeDuration = this.changeDuration;
     }
 
-    extractFilename(filepath: String) {
+    extractFilename(filepath: string) {
         return filepath.replace(/^.*[\\\/]/, '')
     }
 
-    setName(newName: String) {
+    setName(newName: string) {
         this.name = newName;
     }
 
@@ -62,7 +62,7 @@ export class Layer {
         this.duration = newDuration;
     }
 
-    getDuration(filepath: String): number {
+    getDuration(filepath: string): number {
         return 0;
     }
 
@@ -70,12 +70,14 @@ export class Layer {
 
 export class Cue {
     id: number;
-    name: String;
+    name: string;
+    description: string;
     files: Array<Layer>;
     phases: Array<Phase>;
 
-    constructor(name: String) {
+    constructor(name: string) {
         this.name = name;
+        this.description = '';
         this.files = [];
         this.phases = [];
         this.id = db.generateID();
@@ -85,13 +87,14 @@ export class Cue {
         this.removeFile = this.removeFile;
         this.getFiles = this.getFiles;
         this.getCue = this.getCue;
+        this.getLength = this.getLength;
     }
 
     addFile(newLayer: Layer): void {
         this.files.push(newLayer);
     }
 
-    removeFile(filePath: String): void {
+    removeFile(filePath: string): void {
         const ind = this.files.findIndex(x => {
             return x.filePath === filePath;
         })
@@ -107,13 +110,23 @@ export class Cue {
         return this;
     }
 
+    getLength(): number{
+        let longtest = 0;
+        this.files.forEach(x => {
+            if(x.start + x.duration > longtest){
+                longtest = x.start + x.duration
+            }
+        })
+        return longtest
+    }
+
 }
 
 export class Project {
-    name: String;
+    name: string;
     cueList: Array<Cue>;
 
-    constructor(name: String) {
+    constructor(name: string) {
         this.name = name;
         this.cueList = [];
 
@@ -153,12 +166,12 @@ class DB {
         localStorage.clear();
     }
 
-    getCue(project: String, name: String): Cue {
+    getCue(project: string, name: string): Cue {
         const prj = this.data.projects.find(x => {
             return x.name === project;
         })
-
-        if (!prj) {
+        
+        if (prj === undefined) {
             throw ('Project could not be found or does not exist');
         }
 
@@ -173,7 +186,9 @@ class DB {
         }
     }
 
-    getLayer(project: String, cue: String, name: String): Layer {
+    getLayer(project: string, cue: string, name: string): Layer {
+        console.log(project, cue, name);
+        
         const cueName = this.getCue(project, cue);
 
         if (!cueName) {
@@ -191,13 +206,14 @@ class DB {
         }
     }
 
-    addProject(name: String) {
+    addProject(name: string) {
         this.data.projects.push(new Project(name));
         this.save();
     }
 
-    getProject(project: String): Project {
+    getProject(project: string): Project {           
         const prj = this.data.projects.find(x => {
+
             return x.name === project;
         })
 
@@ -216,6 +232,10 @@ class DB {
         }
 
         return id;
+    }
+
+    parseUrl(string: string): string{
+        return decodeURI(string);
     }
 
 }

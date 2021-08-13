@@ -42,7 +42,7 @@ export const CueEditor = (props: any) => {
   }
 
   useEffect(() => {
-    ipcRenderer.on('file-chosen', (ev, data: Array<String>) => {
+    ipcRenderer.on('file-chosen', (ev, data: Array<string>) => {
       data.forEach(x => {
         console.log(cue.getCue(), cue.addFile);
 
