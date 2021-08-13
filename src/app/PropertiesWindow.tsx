@@ -6,7 +6,8 @@ export const PropertiesWindow = (props: any) => {
     const prj = props.project;
     const cue = props.cue;
     const lyr: Layer = props.layer;
-   
+    const setPropertiesActive = props.setPropertiesActive;
+
     const layer = db.getLayer(prj, cue, lyr.name);
 
     const [start, setStart] = useState(layer.start);
@@ -19,20 +20,23 @@ export const PropertiesWindow = (props: any) => {
     const [volume, setVolume] = useState(layer.volume);
     const [loop, setLoop] = useState(layer.loop);
 
-    function changeListener(value:any, setter:any){
+    function changeListener(value: any, setter: any) {
         console.log('Something"s changing...-..-', value);
-        
+
         setter(value);
     }
 
     return (
         <div className="propertyWindow">
             <div className="property">
+                <button id="close" onClick={() => setPropertiesActive(false)}>Back</button>
+            </div>
+            <div className="property">
                 <p className="type">Start</p>
                 <div className="value">
-                    <input 
-                        type="text" 
-                        onChange={(ev)=>{
+                    <input
+                        type="text"
+                        onChange={(ev) => {
                             changeListener(ev.target.value, setStart)
                         }}
                         value={start} />
@@ -42,9 +46,9 @@ export const PropertiesWindow = (props: any) => {
             <div className="property">
                 <p className="type">Duration</p>
                 <div className="value">
-                    <input 
-                        type="text" 
-                        onChange={(ev)=>{
+                    <input
+                        type="text"
+                        onChange={(ev) => {
                             changeListener(ev.target.value, setDuraton)
                         }}
                         value={duration} />
@@ -54,9 +58,9 @@ export const PropertiesWindow = (props: any) => {
             <div className="property">
                 <p className="type">Fade In State</p>
                 <div className="value">
-                    <input 
-                        type="text" 
-                        onChange={(ev)=>{
+                    <input
+                        type="text"
+                        onChange={(ev) => {
                             changeListener(ev.target.value, setFadeInActive)
                         }}
                         value={`${fadeInActive}`} />
@@ -66,9 +70,9 @@ export const PropertiesWindow = (props: any) => {
             <div className="property">
                 <p className="type">Fade Out State</p>
                 <div className="value">
-                    <input 
-                        type="text" 
-                        onChange={(ev)=>{
+                    <input
+                        type="text"
+                        onChange={(ev) => {
                             changeListener(ev.target.value, setFadeOutActive)
                         }}
                         value={`${fadeOutActive}`} />
@@ -78,9 +82,9 @@ export const PropertiesWindow = (props: any) => {
             <div className="property">
                 <p className="type">Fade In Length</p>
                 <div className="value">
-                    <input 
-                        type="text" 
-                        onChange={(ev)=>{
+                    <input
+                        type="text"
+                        onChange={(ev) => {
                             changeListener(ev.target.value, setFadeInLength)
                         }}
                         value={fadeInLength} />
@@ -90,9 +94,9 @@ export const PropertiesWindow = (props: any) => {
             <div className="property">
                 <p className="type">Fade Out Length</p>
                 <div className="value">
-                    <input 
-                        type="text" 
-                        onChange={(ev)=>{
+                    <input
+                        type="text"
+                        onChange={(ev) => {
                             changeListener(ev.target.value, setFadeOutLength)
                         }}
                         value={fadeOutLength} />
@@ -102,9 +106,9 @@ export const PropertiesWindow = (props: any) => {
             <div className="property">
                 <p className="type">Pan</p>
                 <div className="value">
-                    <input 
-                        type="text" 
-                        onChange={(ev)=>{
+                    <input
+                        type="text"
+                        onChange={(ev) => {
                             changeListener(ev.target.value, setPan)
                         }}
                         value={pan} />
@@ -114,9 +118,9 @@ export const PropertiesWindow = (props: any) => {
             <div className="property">
                 <p className="type">Volume</p>
                 <div className="value">
-                    <input 
+                    <input
                         type="text"
-                        onChange={(ev)=>{
+                        onChange={(ev) => {
                             changeListener(ev.target.value, setVolume)
                         }}
                         value={volume} />
@@ -131,7 +135,7 @@ export const PropertiesWindow = (props: any) => {
                         onChange={(ev) => {
                             changeListener(ev.target.value, setLoop)
                         }}
-                        value={`${loop}`}/>
+                        value={`${loop}`} />
                     <p></p>
                 </div>
             </div>

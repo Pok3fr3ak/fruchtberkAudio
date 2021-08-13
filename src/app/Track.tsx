@@ -62,6 +62,18 @@ export const Track = (props: any) => {
       className="cueLayer"
       key={`${params.project}_${params.cue}_${layer.name}_${ind}`}
     >
+      {
+        propertiesActive ?
+          <div className="overlayWrapper">
+            <PropertiesWindow
+              project={params.project}
+              cue={params.cue}
+              layer={layer}
+              setPropertiesActive={setPropertiesActive}
+            />
+          </div>
+          : <></>
+      }
       <div
         className="cueContent"
         ref={ref}
@@ -112,15 +124,6 @@ export const Track = (props: any) => {
             setPropertiesActive(true);
           }}
         >{layer.name}</p>
-        {
-          propertiesActive ? 
-          <PropertiesWindow
-            project={params.project}
-            cue={params.cue}
-            layer={layer}
-          />
-            : <></>
-        }
         <div className="fade fadeOut" style={{ width: fadeOutLength * scale }}>
           <div className="fadeContent">
             <div

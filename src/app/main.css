@@ -6,7 +6,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -16,6 +17,48 @@ body {
 
 #root {
   min-height: 100%;
+  padding: 1.5em;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-column-gap: 15px;
+  position: relative;
+}
+
+#app-header h1 {
+  margin: 0;
+  line-height: 1;
+  font-size: 2em;
+  color: var(--text-color);
+}
+
+#app-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+#app-overlay #overlayContent, #app-overlay #overlayBG {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+#app-overlay #overlayContent {
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+#app-overlay #overlayBG {
+  background-color: var(--bg-color);
+  z-index: 1;
+}
+#app-overlay.idle {
+  z-index: -100;
+  opacity: 0;
+}
+
+#app-main #app-content {
+  margin-top: 1.5em;
 }
 
 button:focus {
@@ -25,15 +68,15 @@ button:focus {
 /* VARIABLES */
 :root {
   /*     --bg-color: rgb(20, 0, 58);
-      --text-color: white;
-      --bg-color-light: rgb(48, 45, 63);
-      --bg-color-light-highlight: rgb(75, 70, 98);
-      --button-active-color: rgb(0, 148, 153);
-      --fadeIn-color: rgba(255, 0, 0, var(--fade-opacity));
-      --fadeOut-color: rgba(65, 105, 225, var(--fade-opacity));
-      --fadeOutAnchor-color: rgb(65, 105, 225);
-      --fadeInAnchor-color: rgb(255, 0, 0);
-      --fade-opacity: 0.3; */
+  --text-color: white;
+  --bg-color-light: rgb(48, 45, 63);
+  --bg-color-light-highlight: rgb(75, 70, 98);
+  --button-active-color: rgb(0, 148, 153);
+  --fadeIn-color: rgba(255, 0, 0, var(--fade-opacity));
+  --fadeOut-color: rgba(65, 105, 225, var(--fade-opacity));
+  --fadeOutAnchor-color: rgb(65, 105, 225);
+  --fadeInAnchor-color: rgb(255, 0, 0);
+  --fade-opacity: 0.3; */
   --bg-color: rgb(14, 14, 14);
   --text-color: white;
   --bg-color-light: rgb(59, 59, 59);
@@ -83,7 +126,6 @@ a {
 
 .prjList,
 .cueList {
-  margin: 1.5em;
   display: grid;
   grid-gap: 1em;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -171,19 +213,24 @@ a {
   margin: 1em;
 }
 
+.backButtonWrapper {
+  height: 2em;
+}
+
 .backButton {
   border: 2px solid var(--text-color);
-  padding: 0;
   background-color: transparent;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .backLink {
   color: var(--text-color);
   font-weight: 700;
-  display: block;
-  padding: 0.5em;
-  width: 100%;
-  height: 100%;
   text-decoration: none;
 }
 
@@ -418,6 +465,20 @@ a {
   color: var(--text-color);
 }
 
+.overlayWrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  background-color: var(--bg-color);
+}
+
 .propertyWindow {
   display: flex;
   flex-direction: column;
@@ -425,11 +486,13 @@ a {
   padding: 1em;
 }
 .propertyWindow .property {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   margin: 0.5em 0;
+}
+.propertyWindow .property #close {
+  margin-right: 5em;
+  margin-bottom: 1em;
 }
 .propertyWindow .property .value {
   display: flex;

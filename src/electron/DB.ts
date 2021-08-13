@@ -72,12 +72,14 @@ export class Cue {
     id: number;
     name: string;
     description: string;
+    zoomScale: number;
     files: Array<Layer>;
     phases: Array<Phase>;
 
     constructor(name: string) {
         this.name = name;
         this.description = '';
+        this.zoomScale = 5;
         this.files = [];
         this.phases = [];
         this.id = db.generateID();
@@ -88,6 +90,8 @@ export class Cue {
         this.getFiles = this.getFiles;
         this.getCue = this.getCue;
         this.getLength = this.getLength;
+        this.getZoomScale = this.getZoomScale;
+        this.setZoomScale = this.setZoomScale;
     }
 
     addFile(newLayer: Layer): void {
@@ -118,6 +122,14 @@ export class Cue {
             }
         })
         return longtest
+    }
+
+    getZoomScale(): number{
+        return this.zoomScale
+    }
+
+    setZoomScale(scale: number){
+        this.zoomScale = scale;
     }
 
 }
@@ -200,10 +212,7 @@ class DB {
             
             return x.name === name
         })
-
-        console.log(layer);
-        
-
+       
         if (layer) {
             return layer;
         } else {
@@ -218,7 +227,6 @@ class DB {
 
     getProject(project: string): Project {           
         const prj = this.data.projects.find(x => {
-
             return x.name === project;
         })
 

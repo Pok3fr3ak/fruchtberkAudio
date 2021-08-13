@@ -15,7 +15,7 @@ export const CueEditor = (props: any) => {
   const cue = db.getCue(params.project, params.cue)
   const layers = cue.files;
 
-  const [scale, setScale] = useState(4);
+  const [scale, setScale] = useState(cue.getZoomScale());
 
   const scaleFactors: Array<number> = [
     1, 0.5, 0.25, 0.1, 0.05, 0.025, 0.01, 0.005, 0.0025, 0.001
@@ -56,6 +56,10 @@ export const CueEditor = (props: any) => {
       ipcRenderer.removeAllListeners('file-chosen')
     };
   }, [])
+
+  useEffect(()=>{
+    cue.setZoomScale(scale)
+  }, [scale])
 
   return (
     <div className="cueEditor">
