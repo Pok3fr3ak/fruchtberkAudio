@@ -180,8 +180,12 @@ export const CueEditor = (props: any) => {
       <Overlay
         active={editingDesecription ? true : false}
       >
-        <label htmlFor="descript">Description</label>
-        <textarea name="descript" cols={75} rows={10} />
+        <button onClick={()=> setEditingDescription(false)}>X</button>
+        <label htmlFor="description">Description</label>
+        <textarea name="description" cols={75} rows={10} />
+        <button onClick={()=>{
+          
+        }}>Set Description</button>
       </Overlay>
     </>
   )

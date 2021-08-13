@@ -26,6 +26,10 @@ button:focus {
     outline: none;
 }
 
+label[for=description]{
+    color: var(--text-color);
+}
+
 #root {
     min-height: 100%;
     padding: 1.5em;
@@ -109,6 +113,7 @@ button:focus {
     --fadeOutAnchor-color: rgb(65, 105, 225);
     --fadeInAnchor-color: rgb(255, 0, 0);
     --fade-opacity: 0.3;
+    --border-radius: 5px;
 }
 
 /* BASIC CLASSES */
@@ -147,7 +152,7 @@ button:focus {
 
 .panel{
     padding: 0.5em;
-    border-radius: 15px;
+    border-radius: var(--border-radius);
     background-color: var(--bg-color-light);
 }
 
@@ -162,7 +167,7 @@ button:focus {
 .cueCard {
     background-color: var(--bg-color-light);
     padding: 1.5em;
-    border-radius: 15px;
+    border-radius: var(--border-radius);
     transition: all 0.15s ease-in-out;
 
     a {
@@ -240,7 +245,7 @@ button:focus {
 
     .cueContent {
         border: 2px black solid;
-        border-radius: 5px;
+        border-radius: var(--border-radius);
         position: relative;
         resize: horizontal;
         overflow: hidden;
@@ -335,7 +340,6 @@ button:focus {
 .mixer {
     margin-top: 1em;
     padding: 0.5em;
-    border-radius: 15px;
     background-color: var(--bg-color-light);
 
     .mixingElement {
@@ -343,7 +347,7 @@ button:focus {
         min-width: 10ch;
         justify-content: space-evenly;
         border: 2px solid black;
-        border-radius: 10px;
+        border-radius: var(--border-radius);
         padding: 10px 5px;
         margin: 0 5px;
         overflow: hidden;
