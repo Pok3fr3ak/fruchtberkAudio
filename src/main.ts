@@ -3,7 +3,6 @@ import contextMenu from 'electron-context-menu';
 import { appManager } from './electron/AppManager';
 import { db } from './electron/DB';
 import { ProjectOverview } from './electron/ProjectOverview';
-import { PropertiesTab } from './electron/PropertiesTab';
 import installExtention, {REACT_DEVELOPER_TOOLS} from 'electron-devtools-installer';
 
 const appElements: any = {
@@ -22,11 +21,6 @@ app.on('ready', () => {
       })
 
     appManager.setWindow('Projects', new ProjectOverview());
-
-
-    ipcMain.on('open-layerProperties', (event, arg)=>{
-        appManager.setWindow('Properties', new PropertiesTab(arg));
-    })
 
     contextMenu({
         prepend: (defaultActions, parameters, browserWindow) => [
