@@ -1,13 +1,12 @@
 import { db, Layer } from "@/electron/DB";
 import { ipcRenderer } from "electron";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import useResizeObserver from "use-resize-observer";
 import { audioManager } from "./AudioManager";
-import { BackButton } from "./components";
 import { Mixer } from "./Mixer";
 import { TimeStamp } from "./Timestamp";
 import { Track } from "./Track";
+import { Application, BackButton, Content, Header, MenuColumn, Overlay, ToolColumn } from './components';
 
 export const CueEditor = (props: any) => {
 
@@ -15,6 +14,8 @@ export const CueEditor = (props: any) => {
   const cue = db.getCue(params.project, params.cue)
   const layers = cue.files;
 
+  const [mixerActive, setMixerActive] = useState(true);
+  const [editingDesecription, setEditingDescription] = useState(false);
   const [scale, setScale] = useState(cue.getZoomScale());
 
   const scaleFactors: Array<number> = [
@@ -24,16 +25,16 @@ export const CueEditor = (props: any) => {
   const [cueLength, setCueLength] = useState(0);
 
   const { ref, } = useResizeObserver<HTMLDivElement>({
-    onResize: ({width, height}) => {
-      if(width){
-        console.log(width, (width * (1/scaleFactors[scale]))/1000);
-        setCueLength(Math.floor((width * (1/scaleFactors[scale]))/1000));
+    onResize: ({ width, height }) => {
+      if (width) {
+        console.log(width, (width * (1 / scaleFactors[scale])) / 1000);
+        setCueLength(Math.floor((width * (1 / scaleFactors[scale])) / 1000));
         console.log(cueLength);
       }
     }
   });
 
-  const timeArray:Array<any> = new Array(cueLength);
+  const timeArray: Array<any> = new Array(cueLength);
 
   const middleMouseMove = (ev: any) => {
     ev.target.scrollLeft += ev.movementX;
@@ -57,103 +58,131 @@ export const CueEditor = (props: any) => {
     };
   }, [])
 
-  useEffect(()=>{
+  useEffect(() => {
     cue.setZoomScale(scale)
   }, [scale])
 
   return (
-    <div className="cueEditor">
-      <BackButton link={`/project/${params.project}`}/>
-      <button
-        onClick={()=>{
-          audioManager.addCueToPlayer(cue);
-          audioManager.playCue(cue);
-        }}
-      >TestPlay</button>
-
-      <div className="cueDescription">
-        <h1>{params.cue}</h1>
-        <h2>{params.project}</h2>
-      </div>
-
-      <article className="editor">
-        <header>
-          <button onClick={() => {
-            if (scale - 1 >= 0) {
-              setScale(scale - 1);
-            }
-
-          }}>+</button>
-          <button onClick={() => {
-            if (scale + 1 < scaleFactors.length) {
-              setScale(scale + 1);
-            }
-          }}>-</button>
-          <button
-            onClick={() => {
-              ipcRenderer.send('prompt-choose-file')
-            }}
-          >Add</button>
-        </header>
-        <main
-          className="cueTimeline"
-          ref={ref}
-          onMouseDown={(ev: any)=>{
-            if(ev.button === 1){
-              const target = ev.nativeEvent.path.find((x:any)=> x.nodeName === "MAIN")
-              ev.preventDefault();
-              target.requestPointerLock();
-              target.addEventListener('mousemove', middleMouseMove)
-              target.addEventListener('mouseup', (ev: any)=>{
-                  target.removeEventListener('mousemove', middleMouseMove);
-                  document.exitPointerLock();
-              })
-            }
-          }}
-        >
-          <div className="time">
-            {
-              timeArray.map((x, i) => {
-                return <TimeStamp
-                  scale={scaleFactors[scale]}
-                  index={i}
-                />
-              })
-
-            }
+    <>
+      <MenuColumn>
+        <BackButton link={`/project/${params.project}`} />
+      </MenuColumn>
+      <Application>
+        <Header>
+          <h1>{params.cue}</h1>
+          <div>
+            <button
+              onClick={() => {
+                audioManager.addCueToPlayer(cue);
+                audioManager.playCue(cue);
+              }}
+            >TestPlay</button>
+            <button onClick={() => {
+              setEditingDescription(true);
+            }}>
+              Edit Description
+            </button>
+            <button
+              onClick={() => setMixerActive(!mixerActive)}
+              style={mixerActive ? { background: 'var(--text-color)' } : {}}
+            >
+              Mixer
+            </button>
           </div>
+        </Header>
+        <Content>
+          <article className="editor panel">
+            <header className="flex row flex-end">
+              <button onClick={() => {
+                if (scale - 1 >= 0) {
+                  setScale(scale - 1);
+                }
+
+              }}>+</button>
+              <button onClick={() => {
+                if (scale + 1 < scaleFactors.length) {
+                  setScale(scale + 1);
+                }
+              }}>-</button>
+              <button
+                onClick={() => {
+                  ipcRenderer.send('prompt-choose-file')
+                }}
+              >Add</button>
+            </header>
+            <main
+              className="cueTimeline"
+              ref={ref}
+              onMouseDown={(ev: any) => {
+                if (ev.button === 1) {
+                  const target = ev.nativeEvent.path.find((x: any) => x.nodeName === "MAIN")
+                  ev.preventDefault();
+                  target.requestPointerLock();
+                  target.addEventListener('mousemove', middleMouseMove)
+                  target.addEventListener('mouseup', (ev: any) => {
+                    target.removeEventListener('mousemove', middleMouseMove);
+                    document.exitPointerLock();
+                  })
+                }
+              }}
+            >
+              <div className="time">
+                {
+                  timeArray.map((x, i) => {
+                    return <TimeStamp
+                      scale={scaleFactors[scale]}
+                      index={i}
+                    />
+                  })
+
+                }
+              </div>
+              {
+                layers.map((layer, ind) => {
+                  return (
+                    <Track
+                      key={ind + `${Math.floor(Math.random() * 1000)}`}
+                      params={params}
+                      layer={layer}
+                      ind={ind}
+                      scale={scaleFactors[scale]}
+                    />
+                  )
+                })
+              }
+            </main>
+          </article>
           {
-            layers.map((layer, ind) => {
-              return (
-                <Track
-                  key={ind + `${Math.floor(Math.random() * 1000)}`}
-                  params={params}
-                  layer={layer}
-                  ind={ind}
-                  scale={scaleFactors[scale]}
-                />
-              )
-            })
+            mixerActive ?
+              <article className="mixer panel">
+                <header></header>
+                <main className="flex row">
+                  {
+                    layers.map((layer, ind) => {
+                      return (
+                        <Mixer
+                          key={`mix_${ind}-${Math.floor(Math.random() * 1000)}`}
+                          params={params}
+                          layer={layer}
+                          ind={ind}
+                        />
+                      )
+                    })
+                  }
+                </main>
+              </article>
+              :
+              <></>
           }
-        </main>
-      </article>
-      <article className="mixer">
-        <header></header>
-        <main className="flex row">
-          {
-            layers.map((layer, ind) => {
-              return (
-                <Mixer
-                  key={`mix_${ind}-${Math.floor(Math.random() * 1000)}`}
-                  params={params}
-                  layer={layer}
-                  ind={ind}
-                />
-              )
-            })
-          }
-        </main>
-      </article>
-    </div>
+
+        </Content>
+      </Application>
+      <Overlay
+        active={editingDesecription ? true : false}
+      >
+        <label htmlFor="descript">Description</label>
+        <textarea name="descript" cols={75} rows={10} />
+      </Overlay>
+    </>
   )
 }

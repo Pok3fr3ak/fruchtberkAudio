@@ -1,6 +1,6 @@
 import { Cue, db, Project } from "@/electron/DB";
 import React, { useContext, useEffect, useState } from "react"
-import { BackButton } from "./components";
+import { Application, BackButton, Content, Header, MenuColumn, Overlay, ToolColumn } from './components';
 
 interface SelectionContextInterface {
     selectionActive: boolean,
@@ -36,27 +36,43 @@ export const Player = (props: any) => {
     const selectionValue = { selectionActive, setSelectionActive, selected, setSelected, currCue, setCurrCue };
 
     return (
-        <div>
-            <BackButton link="/player" />
-            <div id="assembler">
-                <SelectionContext.Provider value={selectionValue}>
-                    {
-                        pairs.map((x, i) => {
-                            return (
-                                <Group
-                                    key={i}
-                                    index={i + 1}
-                                />
-                            )
-                        })
-                    }
-                    <button onClick={() => setNumberOfPairs(numberOfPairs + 1)}>ADD LAYER</button>
-                    <Selector
-                        project={project}
-                    />
-                </SelectionContext.Provider>
-            </div>
-        </div>
+        <>
+            <MenuColumn>
+                <BackButton link="/player" />
+            </MenuColumn>
+            <SelectionContext.Provider value={selectionValue}>
+            <Application>
+                <Header>
+
+                </Header>
+                <Content>
+                    <div id="assembler">
+
+                            {
+                                pairs.map((x, i) => {
+                                    return (
+                                        <Group
+                                            key={i}
+                                            index={i + 1}
+                                        />
+                                    )
+                                })
+                            }
+                            <button onClick={() => setNumberOfPairs(numberOfPairs + 1)}>ADD LAYER</button>
+
+
+                    </div>
+                </Content>
+            </Application>
+            <Overlay
+                active={selectionActive ? true : false}
+            >
+                <Selector
+                    project={project}
+                />
+            </Overlay>
+            </SelectionContext.Provider>
+        </>
     )
 }
 
@@ -113,7 +129,7 @@ const Node = (props: any) => {
             if (currCue !== null && currCue !== undefined) {
                 setCue(currCue);
                 console.log(cue);
-                
+
             }
             setCurrCue(null)
         }
@@ -154,27 +170,26 @@ const Selector = (props: any) => {
     const { selectionActive, setSelectionActive, setCurrCue } = useContext(SelectionContext);
 
     return (
-        <div id="selector" className={selectionActive ? 'active' : 'hidden'}>
-            <ul>
-                {
-                    project.cueList.map((x, i) => {
-                        return (
-                            <li
-                                key={i}>
-                                <button
-                                    onClick={(ev) => {
-                                        setCurrCue(x)
-                                        setSelectionActive(false)
-                                    }}
-                                >
-                                    {x.name}
-                                </button>
-                            </li>
-                        )
-                    })
-                }
-            </ul>
-        </div>
+        <ul id="selector">
+            <button onClick={()=>setSelectionActive(false)}>X</button>
+            {
+                project.cueList.map((x, i) => {
+                    return (
+                        <li
+                            key={i}>
+                            <button
+                                onClick={(ev) => {
+                                    setCurrCue(x)
+                                    setSelectionActive(false)
+                                }}
+                            >
+                                {x.name}
+                            </button>
+                        </li>
+                    )
+                })
+            }
+        </ul>
     )
 
 }

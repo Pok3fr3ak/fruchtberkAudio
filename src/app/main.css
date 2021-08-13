@@ -13,6 +13,15 @@ body {
 
 body {
   margin: 0;
+  background-color: var(--bg-color);
+}
+
+a {
+  color: var(--text-color);
+}
+
+button:focus {
+  outline: none;
 }
 
 #root {
@@ -24,6 +33,11 @@ body {
   position: relative;
 }
 
+#app-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 #app-header h1 {
   margin: 0;
   line-height: 1;
@@ -31,6 +45,7 @@ body {
   color: var(--text-color);
 }
 
+/* APPLICATION SECTION STYLING */
 #app-overlay {
   position: absolute;
   width: 100%;
@@ -59,10 +74,6 @@ body {
 
 #app-main #app-content {
   margin-top: 1.5em;
-}
-
-button:focus {
-  outline: none;
 }
 
 /* VARIABLES */
@@ -115,13 +126,16 @@ button:focus {
   align-items: center;
 }
 
-/* SPECIFIC CLASSES */
-body {
-  background-color: var(--bg-color);
+.flex-end {
+  justify-content: flex-end;
+  align-items: center;
 }
 
-a {
-  color: var(--text-color);
+/* SPECIFIC CLASSES */
+.panel {
+  padding: 0.5em;
+  border-radius: 15px;
+  background-color: var(--bg-color-light);
 }
 
 .prjList,
@@ -130,87 +144,30 @@ a {
   grid-gap: 1em;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
-.prjList .projectCard,
-.prjList .cueCard,
-.cueList .projectCard,
-.cueList .cueCard {
+
+.projectCard,
+.cueCard {
   background-color: var(--bg-color-light);
   padding: 1.5em;
   border-radius: 15px;
   transition: all 0.15s ease-in-out;
 }
-.prjList .projectCard a,
-.prjList .cueCard a,
-.cueList .projectCard a,
-.cueList .cueCard a {
+.projectCard a,
+.cueCard a {
   text-decoration: none;
   color: var(--text-color);
 }
-.prjList .projectCard a h1,
-.prjList .cueCard a h1,
-.cueList .projectCard a h1,
-.cueList .cueCard a h1 {
+.projectCard a h1,
+.cueCard a h1 {
   margin: 0;
 }
-.prjList .projectCard a p,
-.prjList .cueCard a p,
-.cueList .projectCard a p,
-.cueList .cueCard a p {
+.projectCard a p,
+.cueCard a p {
   margin: 0;
 }
-.prjList .projectCard:hover,
-.prjList .cueCard:hover,
-.cueList .projectCard:hover,
-.cueList .cueCard:hover {
+.projectCard:hover,
+.cueCard:hover {
   background-color: var(--bg-color-light-highlight);
-}
-
-.newProject .overlay,
-.newCue .overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.newProject .overlay .wrapper,
-.newCue .overlay .wrapper {
-  z-index: 110;
-}
-.newProject .overlay .bg,
-.newCue .overlay .bg {
-  width: 100%;
-  height: 100%;
-  background-color: black;
-  opacity: 0;
-  z-index: -100;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-.newProject .overlay.hidden,
-.newCue .overlay.hidden {
-  display: none;
-}
-.newProject .overlay.active .bg,
-.newCue .overlay.active .bg {
-  opacity: 0.4;
-  z-index: 100;
-}
-
-.projectOverview {
-  color: var(--text-color);
-}
-.projectOverview .header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  margin: 1em;
 }
 
 .backButtonWrapper {
@@ -347,21 +304,8 @@ a {
   margin: 0 1em;
 }
 
-.editor {
-  margin: 1em;
-  padding: 0.5em;
-  border-radius: 15px;
-  background-color: var(--bg-color-light);
-}
-.editor header {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-}
-
 .mixer {
-  margin: 1em;
+  margin-top: 1em;
   padding: 0.5em;
   border-radius: 15px;
   background-color: var(--bg-color-light);
@@ -465,20 +409,6 @@ a {
   color: var(--text-color);
 }
 
-.overlayWrapper {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  background-color: var(--bg-color);
-}
-
 .propertyWindow {
   display: flex;
   flex-direction: column;
@@ -518,15 +448,8 @@ a {
 }
 
 #selector {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: -10;
-  opacity: 0;
-}
-#selector.active {
-  z-index: 100;
-  opacity: 1;
+  list-style: none;
+  padding: 0;
 }
 
 .test {
