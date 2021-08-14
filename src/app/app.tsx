@@ -124,6 +124,7 @@ const ProjectOverview = (props: any) => {
           <div className="cueList">
             {
               db.getProject(props.match.params.project).cueList.map(cue => {
+                const date = new Date(cue.changed)
                 return (
                   <div
                     className="cueCard"
@@ -133,6 +134,8 @@ const ProjectOverview = (props: any) => {
                       to={`/project/${props.match.params.project}/cue/${cue.name}`}
                     >
                       <h2>{cue.name}</h2>
+                      <p className="cueDescription">{cue.description}</p>
+                      <p className="info">{`Last Changed: ${date.toLocaleDateString('de-DE')}, ${date.toLocaleTimeString('de-DE')}`}</p>
                     </Link>
                   </div>
                 )

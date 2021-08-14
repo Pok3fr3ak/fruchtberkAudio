@@ -16,24 +16,27 @@ export const ProjectSelector = () => {
           <h1>Projects</h1>
         </Header>
         <Content>
-          {
-            prjList.map((x, i) => {
-              return (
-                <div
-                  className="projectCard"
-                  key={`prj_${Math.floor(Math.random() * 10000)}`}
-                >
-                  <Link
-                    to={`/player/${x.name}`}
-                    className=""
+          <div className="prjList">
+            {
+              prjList.map((x, i) => {
+                return (
+                  <div
+                    className="projectCard"
+                    key={`prj_${Math.floor(Math.random() * 10000)}`}
                   >
-                    <h1>{x.name}</h1>
-                    <p>{x.cueList.length} Cues</p>
-                  </Link>
-                </div>
-              )
-            })
-          }
+                    <Link
+                      to={`/player/${x.name}`}
+                      className=""
+                    >
+                      <h1>{x.name}</h1>
+                      <p>{x.cueList.length} Cues</p>
+                    </Link>
+                  </div>
+                )
+              })
+            }
+          </div>
+
         </Content>
       </Application>
     </>

@@ -16,6 +16,7 @@ export const CueEditor = (props: any) => {
 
   const [mixerActive, setMixerActive] = useState(true);
   const [editingDesecription, setEditingDescription] = useState(false);
+  const [description, setDescription] = useState(cue.description);
   const [scale, setScale] = useState(cue.getZoomScale());
 
   const scaleFactors: Array<number> = [
@@ -97,7 +98,6 @@ export const CueEditor = (props: any) => {
                 if (scale - 1 >= 0) {
                   setScale(scale - 1);
                 }
-
               }}>+</button>
               <button onClick={() => {
                 if (scale + 1 < scaleFactors.length) {
@@ -182,9 +182,13 @@ export const CueEditor = (props: any) => {
       >
         <button onClick={()=> setEditingDescription(false)}>X</button>
         <label htmlFor="description">Description</label>
-        <textarea name="description" cols={75} rows={10} />
+        <textarea name="description" value={description} cols={75} rows={10} onChange={(ev)=>{setDescription(ev.target.value); console.log(description);
+        }}/>
         <button onClick={()=>{
-          
+          cue.setDescription(description);
+          console.log(description);
+          db.save();
+          setEditingDescription(false);
         }}>Set Description</button>
       </Overlay>
     </>

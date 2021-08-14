@@ -151,7 +151,6 @@ export const Track = (props: any) => {
           </div>
         </div>
       </div>
-
     </div>
   )
 }

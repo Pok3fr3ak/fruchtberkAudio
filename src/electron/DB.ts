@@ -72,6 +72,7 @@ export class Cue {
     id: number;
     name: string;
     description: string;
+    changed: number;
     zoomScale: number;
     files: Array<Layer>;
     phases: Array<Phase>;
@@ -79,6 +80,7 @@ export class Cue {
     constructor(name: string) {
         this.name = name;
         this.description = '';
+        this.changed = Date.now();
         this.zoomScale = 5;
         this.files = [];
         this.phases = [];
@@ -92,6 +94,7 @@ export class Cue {
         this.getLength = this.getLength;
         this.getZoomScale = this.getZoomScale;
         this.setZoomScale = this.setZoomScale;
+        this.setDescription = this.setDescription;
     }
 
     addFile(newLayer: Layer): void {
@@ -130,6 +133,10 @@ export class Cue {
 
     setZoomScale(scale: number){
         this.zoomScale = scale;
+    }
+
+    setDescription(description: string){
+        this.description = description;
     }
 
 }

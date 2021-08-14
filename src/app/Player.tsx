@@ -79,6 +79,7 @@ export const Player = (props: any) => {
 const Group = (props: any) => {
 
     const [numberOfNodes, setNumberOfNodes] = useState(1);
+    const [triggerSwitch, setTriggerSwitch] = useState(false);
 
     const Nodes = [...Array(numberOfNodes)].map((x, i) => i);
 
@@ -89,7 +90,7 @@ const Group = (props: any) => {
                     return (
                         <>
                             <Node index={props.index * 30 + i} />
-                            {i < arr.length - 1 ? <Switcher /> : ''}
+                            {i < arr.length - 1 ? <Switcher left={x} right={arr[i+1]}/> : ''}
                         </>
                     )
                 })
@@ -158,7 +159,8 @@ const Node = (props: any) => {
     )
 }
 
-const Switcher = () => {
+const Switcher = (props: any) => {
+    console.log(props);
     return (
         <button>SWITCH</button>
     )
@@ -191,5 +193,4 @@ const Selector = (props: any) => {
             }
         </ul>
     )
-
 }
