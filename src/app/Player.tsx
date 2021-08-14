@@ -83,6 +83,13 @@ const Group = (props: any) => {
 
     const Nodes = [...Array(numberOfNodes)].map((x, i) => i);
 
+    useEffect(()=>{
+        if(triggerSwitch === true){
+            console.log(triggerSwitch);
+            setTriggerSwitch(false);
+        }
+    },[triggerSwitch])
+
     return (
         <div className="nodeGroup">
             {
@@ -90,7 +97,14 @@ const Group = (props: any) => {
                     return (
                         <>
                             <Node index={props.index * 30 + i} />
-                            {i < arr.length - 1 ? <Switcher left={x} right={arr[i+1]}/> : ''}
+                            {
+                                i < arr.length - 1 ? 
+                                <Switcher
+                                    setTriggerSwitch={setTriggerSwitch}
+                                />
+                                :
+                                <></>
+                            }
                         </>
                     )
                 })
@@ -160,9 +174,9 @@ const Node = (props: any) => {
 }
 
 const Switcher = (props: any) => {
-    console.log(props);
+
     return (
-        <button>SWITCH</button>
+        <button onClick={()=>props.setTriggerSwitch(true)}>SWITCH</button>
     )
 }
 
