@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import useResizeObserver from 'use-resize-observer';
 import { PropertiesWindow } from "./PropertiesWindow";
 
-export const Track = (props: any) => {
+const Track = (props: any) => {
 
   const params = props.params;
   const layer: Layer = props.layer;
@@ -154,3 +154,5 @@ export const Track = (props: any) => {
     </div>
   )
 }
+
+export {Track}

@@ -7,7 +7,7 @@ import { CueEditor } from './CueEditor';
 import { PropertiesWindow } from './PropertiesWindow';
 import { Player } from './Player';
 import { ProjectSelector } from './ProjectSelector';
-import { Application, BackButton, Content, Header, MenuColumn, Overlay, ToolColumn } from './components';
+import { Application, BackButton, Content, CueCard, Header, MenuColumn, Overlay, ToolColumn } from './components';
 
 declare global {
   interface Window {
@@ -93,14 +93,14 @@ const ProjectList = (props: any) => {
       <Overlay
         active={addingProject ? true : false}
       >
-          <div className="wrapper">
-            <button onClick={() => setAddingProject(false)}>X</button>
-            <input type="text" onChange={(ev) => { setNewPrjName(ev.target.value) }} />
-            <button onClick={() => {
-              db.addProject(newPrjName);
-              window.location.reload();
-            }}>Add Project</button>
-          </div>
+        <div className="wrapper">
+          <button onClick={() => setAddingProject(false)}>X</button>
+          <input type="text" onChange={(ev) => { setNewPrjName(ev.target.value) }} />
+          <button onClick={() => {
+            db.addProject(newPrjName);
+            window.location.reload();
+          }}>Add Project</button>
+        </div>
       </Overlay>
     </>
   )
@@ -124,20 +124,12 @@ const ProjectOverview = (props: any) => {
           <div className="cueList">
             {
               db.getProject(props.match.params.project).cueList.map(cue => {
-                const date = new Date(cue.changed)
+
                 return (
-                  <div
-                    className="cueCard"
-                    key={`cue_${Math.floor(Math.random() * 10000)}`}
-                  >
-                    <Link
-                      to={`/project/${props.match.params.project}/cue/${cue.name}`}
-                    >
-                      <h2>{cue.name}</h2>
-                      <p className="cueDescription">{cue.description}</p>
-                      <p className="info">{`Last Changed: ${date.toLocaleDateString('de-DE')}, ${date.toLocaleTimeString('de-DE')}`}</p>
-                    </Link>
-                  </div>
+                  <CueCard
+                    cue={cue}
+                    link
+                    linkto={`/project/${props.match.params.project}/cue/${cue.name}`} />
                 )
               })
             }

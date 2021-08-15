@@ -137,6 +137,10 @@ label[for=description] {
   align-items: center;
 }
 
+.max-width-50ch {
+  max-width: 50ch;
+}
+
 /* SPECIFIC CLASSES */
 .panel {
   padding: 0.5em;
@@ -166,8 +170,9 @@ label[for=description] {
   border-radius: var(--border-radius);
   transition: all 0.15s ease-in-out;
 }
-.projectCard a,
-.cueCard a {
+.projectCard a, .projectCard .no-link,
+.cueCard a,
+.cueCard .no-link {
   text-decoration: none;
   color: var(--text-color);
   height: 100%;
@@ -176,24 +181,32 @@ label[for=description] {
 }
 .projectCard a h1,
 .projectCard a h2,
-.projectCard a p,
+.projectCard a p, .projectCard .no-link h1,
+.projectCard .no-link h2,
+.projectCard .no-link p,
 .cueCard a h1,
 .cueCard a h2,
-.cueCard a p {
+.cueCard a p,
+.cueCard .no-link h1,
+.cueCard .no-link h2,
+.cueCard .no-link p {
   margin: 0;
 }
-.projectCard a h2,
-.cueCard a h2 {
+.projectCard a h2, .projectCard .no-link h2,
+.cueCard a h2,
+.cueCard .no-link h2 {
   margin-bottom: 0.5em;
 }
-.projectCard a p.cueDescription,
-.cueCard a p.cueDescription {
+.projectCard a p.cueDescription, .projectCard .no-link p.cueDescription,
+.cueCard a p.cueDescription,
+.cueCard .no-link p.cueDescription {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.projectCard a p.info,
-.cueCard a p.info {
+.projectCard a p.info, .projectCard .no-link p.info,
+.cueCard a p.info,
+.cueCard .no-link p.info {
   margin-top: 0.5em;
   font-size: 0.8em;
 }
@@ -481,6 +494,14 @@ label[for=description] {
 #selector {
   list-style: none;
   padding: 0;
+  max-height: 100%;
+  overflow: auto;
+}
+#selector li {
+  margin-bottom: 1em;
+}
+#selector li:last-child {
+  margin-bottom: 0em;
 }
 
 .cueTimeline:hover::-webkit-scrollbar-track {
@@ -540,6 +561,9 @@ label[for=description] {
 }
 .node.active {
   border: 4px solid crimson;
+}
+.node.playing {
+  background-color: var(--fadeIn-color);
 }
 .node .footer {
   display: flex;

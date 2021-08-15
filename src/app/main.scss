@@ -149,6 +149,10 @@ label[for="description"] {
     align-items: center;
 }
 
+.max-width-50ch{
+    max-width: 50ch;
+}
+
 /* SPECIFIC CLASSES */
 
 .panel {
@@ -179,7 +183,7 @@ label[for="description"] {
     border-radius: var(--border-radius);
     transition: all 0.15s ease-in-out;
 
-    a {
+    a, .no-link {
         text-decoration: none;
         color: var(--text-color);
         height: 100%;
@@ -529,6 +533,16 @@ label[for="description"] {
 #selector {
     list-style: none;
     padding: 0;
+    max-height: 100%;
+    overflow: auto;
+
+    li{
+        margin-bottom: 1em;
+
+        &:last-child{
+            margin-bottom: 0em;
+        }
+    }
 }
 
 .cueTimeline:hover::-webkit-scrollbar-track {
@@ -591,6 +605,10 @@ label[for="description"] {
 
     &.active {
         border: 4px solid crimson;
+    }
+
+    &.playing{
+        background-color: var(--fadeIn-color);
     }
 
     .footer{

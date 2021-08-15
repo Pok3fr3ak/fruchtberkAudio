@@ -1,7 +1,7 @@
 import { db, Layer } from "@/electron/DB";
 import React, { useEffect, useState } from "react";
 
-export const Mixer = (props: any) => {
+const Mixer = (props: any) => {
     const params = props.params;
     const layer: Layer = props.layer;
     const ind = props.ind;
@@ -87,3 +87,5 @@ export const Mixer = (props: any) => {
         </div>
     )
 }
+
+export {Mixer}

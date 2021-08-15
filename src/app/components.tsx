@@ -1,7 +1,8 @@
+import { Cue } from "@/electron/DB"
 import React from "react"
 import { Link } from "react-router-dom"
 
-export const BackButton = (props: any) => {
+const BackButton = (props: any) => {
     return (
         <div className="backButtonWrapper">
             <button className="backButton">
@@ -12,7 +13,46 @@ export const BackButton = (props: any) => {
     )
 }
 
-export const Header = (props: any) => {
+interface CueCardProps {
+    cue: Cue,
+    optionalClass?: string
+    link?: boolean
+    linkto?: string,
+}
+
+const CueCard = (props: CueCardProps) => {
+    const date = new Date(props.cue.changed)
+
+    const cardContent = () => {
+        return (
+            <>
+                <h2>{props.cue.name}</h2>
+                <p className="cueDescription">{props.cue.description}</p>
+                <p className="info">{`Last Changed: ${date.toLocaleDateString('de-DE')}, ${date.toLocaleTimeString('de-DE')}`}</p>
+            </>
+        )
+    }
+
+    return (
+        <div
+            className={`cueCard ${props.optionalClass ? props.optionalClass : ''}`}
+            key={`cue_${Math.floor(Math.random() * 10000)}`}
+        >
+            {
+                props.link ? <Link to={props.linkto}>
+                    {cardContent()}
+                </Link>
+                    :
+                <div className="no-link">
+                    {cardContent()}
+                </div>
+            }
+
+        </div>
+    )
+}
+
+const Header = (props: any) => {
     return (
         <header id="app-header">
             {props.children}
@@ -20,7 +60,7 @@ export const Header = (props: any) => {
     )
 }
 
-export const MenuColumn = (props: any) => {
+const MenuColumn = (props: any) => {
     return (
         <div id="app-menuColumn">
             {props.children}
@@ -28,7 +68,7 @@ export const MenuColumn = (props: any) => {
     )
 }
 
-export const ToolColumn = (props: any) => {
+const ToolColumn = (props: any) => {
     return (
         <div id="app-toolColumn">
             {props.children}
@@ -36,7 +76,7 @@ export const ToolColumn = (props: any) => {
     )
 }
 
-export const Application = (props: any) => {
+const Application = (props: any) => {
     return (
         <main id="app-main">
             {props.children}
@@ -44,7 +84,7 @@ export const Application = (props: any) => {
     )
 }
 
-export const Content = (props: any) => {
+const Content = (props: any) => {
     return (
         <article id="app-content">
             {props.children}
@@ -52,7 +92,7 @@ export const Content = (props: any) => {
     )
 }
 
-export const Overlay = (props: any) => {
+const Overlay = (props: any) => {
     const active = props.active;
 
     return (
@@ -67,3 +107,5 @@ export const Overlay = (props: any) => {
         </div>
     )
 }
+
+export { BackButton, CueCard, Header, MenuColumn, ToolColumn, Application, Content, Overlay }

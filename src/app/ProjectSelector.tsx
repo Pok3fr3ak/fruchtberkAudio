@@ -3,7 +3,7 @@ import React from "react"
 import { Link } from "react-router-dom";
 import { Application, BackButton, Content, Header, MenuColumn, Overlay, ToolColumn } from './components';
 
-export const ProjectSelector = () => {
+const ProjectSelector = () => {
   const prjList = db.parseDB().projects;
 
   return (
@@ -36,9 +36,10 @@ export const ProjectSelector = () => {
               })
             }
           </div>
-
         </Content>
       </Application>
     </>
   )
 }
+
+export {ProjectSelector}

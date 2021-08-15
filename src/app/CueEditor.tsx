@@ -8,7 +8,7 @@ import { TimeStamp } from "./Timestamp";
 import { Track } from "./Track";
 import { Application, BackButton, Content, Header, MenuColumn, Overlay, ToolColumn } from './components';
 
-export const CueEditor = (props: any) => {
+const CueEditor = (props: any) => {
 
   const params = props.match.params;
   const cue = db.getCue(params.project, params.cue)
@@ -180,11 +180,12 @@ export const CueEditor = (props: any) => {
       <Overlay
         active={editingDesecription ? true : false}
       >
-        <button onClick={()=> setEditingDescription(false)}>X</button>
+        <button onClick={() => setEditingDescription(false)}>X</button>
         <label htmlFor="description">Description</label>
-        <textarea name="description" value={description} cols={75} rows={10} onChange={(ev)=>{setDescription(ev.target.value); console.log(description);
-        }}/>
-        <button onClick={()=>{
+        <textarea name="description" value={description} cols={75} rows={10} onChange={(ev) => {
+          setDescription(ev.target.value); console.log(description);
+        }} />
+        <button onClick={() => {
           cue.setDescription(description);
           console.log(description);
           db.save();
@@ -194,3 +195,5 @@ export const CueEditor = (props: any) => {
     </>
   )
 }
+
+export { CueEditor }

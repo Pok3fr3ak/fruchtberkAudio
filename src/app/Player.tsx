@@ -1,6 +1,12 @@
 import { Cue, db, Project } from "@/electron/DB";
 import React, { useContext, useEffect, useState } from "react"
-import { Application, BackButton, Content, Header, MenuColumn, Overlay, ToolColumn } from './components';
+import { Application, BackButton, Content, CueCard, Header, MenuColumn, Overlay, ToolColumn } from './components';
+
+interface TriggerInfo {
+    trigger: boolean
+    lastPlaying: number | null,
+    toPlay: number,
+}
 
 interface SelectionContextInterface {
     selectionActive: boolean,
@@ -41,12 +47,15 @@ export const Player = (props: any) => {
                 <BackButton link="/player" />
             </MenuColumn>
             <SelectionContext.Provider value={selectionValue}>
-            <Application>
-                <Header>
-
-                </Header>
-                <Content>
-                    <div id="assembler">
+                <Application>
+                    <Header>
+                        <h1>David Guetta: {project.name}</h1>
+                        <div>
+                            <button>Save</button>
+                        </div>
+                    </Header>
+                    <Content>
+                        <div id="assembler">
 
                             {
                                 pairs.map((x, i) => {
@@ -59,18 +68,16 @@ export const Player = (props: any) => {
                                 })
                             }
                             <button id="addLayer" onClick={() => setNumberOfPairs(numberOfPairs + 1)}>ADD LAYER</button>
-
-
-                    </div>
-                </Content>
-            </Application>
-            <Overlay
-                active={selectionActive ? true : false}
-            >
-                <Selector
-                    project={project}
-                />
-            </Overlay>
+                        </div>
+                    </Content>
+                </Application>
+                <Overlay
+                    active={selectionActive ? true : false}
+                >
+                    <Selector
+                        project={project}
+                    />
+                </Overlay>
             </SelectionContext.Provider>
         </>
     )
@@ -79,16 +86,35 @@ export const Player = (props: any) => {
 const Group = (props: any) => {
 
     const [numberOfNodes, setNumberOfNodes] = useState(1);
-    const [triggerSwitch, setTriggerSwitch] = useState(false);
+    const [triggerSwitch, setTriggerSwitch] = useState<TriggerInfo>({
+        trigger: false,
+        lastPlaying: null,
+        toPlay: 0
+    });
+    const [currPlaying, setCurrPlaying] = useState<number | null>(null);
+    const [selectedCues, setSelectedCues] = useState<Array<Cue | null>>([]);
 
     const Nodes = [...Array(numberOfNodes)].map((x, i) => i);
 
-    useEffect(()=>{
-        if(triggerSwitch === true){
-            console.log(triggerSwitch);
-            setTriggerSwitch(false);
+    useEffect(() => {
+        //Last Playing is fucked currently
+        if (triggerSwitch.trigger === true) {
+            setTriggerSwitch({
+                trigger: false,
+                toPlay: triggerSwitch.toPlay,
+                lastPlaying: currPlaying
+            });
+            setCurrPlaying(triggerSwitch.toPlay)
         }
-    },[triggerSwitch])
+    }, [triggerSwitch])
+
+    useEffect(() => {
+        //Call to Audio Manager to play the right cue and stop the other
+        //With crossfade
+        if(currPlaying !== null && currPlaying !== undefined){
+            //console.log(currPlaying, selectedCues[currPlaying]);
+        }
+    }, [currPlaying])
 
     return (
         <div className="nodeGroup">
@@ -96,14 +122,23 @@ const Group = (props: any) => {
                 Nodes.map((x, i, arr) => {
                     return (
                         <>
-                            <Node index={props.index * 30 + i} />
+                            <Node
+                                index={props.index * 30 + i}
+                                localIndex={i}
+                                currPlaying={currPlaying}
+                                selectedCues={selectedCues}
+                                setSelectedCues={setSelectedCues}
+                            />
                             {
-                                i < arr.length - 1 ? 
-                                <Switcher
-                                    setTriggerSwitch={setTriggerSwitch}
-                                />
-                                :
-                                <></>
+                                i < arr.length - 1 ?
+                                    <Switcher
+                                        index={i}
+                                        direction={typeof triggerSwitch.toPlay === 'number' && triggerSwitch.toPlay > i ? 'left' : 'right'}
+                                        triggerSwitch={triggerSwitch}
+                                        setTriggerSwitch={setTriggerSwitch}
+                                    />
+                                    :
+                                    <></>
                             }
                         </>
                     )
@@ -114,7 +149,18 @@ const Group = (props: any) => {
     )
 }
 
-const Node = (props: any) => {
+interface NodeProps {
+    index: number,
+    localIndex: number,
+    currPlaying: number | null,
+    selectedCues: Array<Cue | null>,
+    setSelectedCues: (selCue: Array<Cue | null>) => void
+}
+
+const Node = (props: NodeProps) => {
+    const selectedCues = props.selectedCues;
+    const setSelectedCues = props.setSelectedCues;
+
     const [cue, setCue] = useState<Cue>();
     const [active, setActive] = useState(false);
 
@@ -143,8 +189,9 @@ const Node = (props: any) => {
         if (selected === props.index) {
             if (currCue !== null && currCue !== undefined) {
                 setCue(currCue);
-                console.log(cue);
-
+                let newCueArr = selectedCues;
+                newCueArr[props.localIndex] = currCue
+                setSelectedCues(newCueArr)
             }
             setCurrCue(null)
         }
@@ -152,7 +199,7 @@ const Node = (props: any) => {
 
     return (
         <div
-            className={`${active ? 'active' : 'idle'} node`}
+            className={`${active ? 'active' : 'idle'} node ${props.currPlaying === props.localIndex ? 'playing' : ''}`}
             onClick={() => {
                 /* selector(lID) */
                 setSelected(props.index);
@@ -180,10 +227,25 @@ const Node = (props: any) => {
     )
 }
 
-const Switcher = (props: any) => {
+interface SwitcherProps {
+    direction: string,
+    index: number,
+    triggerSwitch: TriggerInfo,
+    setTriggerSwitch: (obj: any) => void
+}
+
+const Switcher = (props: SwitcherProps) => {
+    const triggerSwitch: TriggerInfo = props.triggerSwitch;
+    const direction = props.direction;
 
     return (
-        <button onClick={()=>props.setTriggerSwitch(true)}>SWITCH</button>
+        <button onClick={
+            () => props.setTriggerSwitch({
+                trigger: true,
+                toPlay: direction === 'right' ? props.index + 1 : props.index,
+                lastPlaying: props.index
+            })}
+        >{direction}</button>
     )
 }
 
@@ -194,20 +256,21 @@ const Selector = (props: any) => {
 
     return (
         <ul id="selector">
-            <button onClick={()=>setSelectionActive(false)}>X</button>
+            <button onClick={() => setSelectionActive(false)}>X</button>
             {
                 project.cueList.map((x, i) => {
                     return (
                         <li
-                            key={i}>
-                            <button
-                                onClick={(ev) => {
-                                    setCurrCue(x)
-                                    setSelectionActive(false)
-                                }}
-                            >
-                                {x.name}
-                            </button>
+                            key={i}
+                            onClick={(ev)=> {
+                                setCurrCue(x)
+                                setSelectionActive(false)
+                            }}
+                        >
+                                <CueCard
+                                    cue={x}
+                                    optionalClass="max-width-50ch"
+                                />
                         </li>
                     )
                 })
