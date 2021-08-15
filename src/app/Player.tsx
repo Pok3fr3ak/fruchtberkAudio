@@ -58,7 +58,7 @@ export const Player = (props: any) => {
                                     )
                                 })
                             }
-                            <button onClick={() => setNumberOfPairs(numberOfPairs + 1)}>ADD LAYER</button>
+                            <button id="addLayer" onClick={() => setNumberOfPairs(numberOfPairs + 1)}>ADD LAYER</button>
 
 
                     </div>
@@ -152,7 +152,7 @@ const Node = (props: any) => {
 
     return (
         <div
-            className={`leftCue ${active ? 'active' : 'idle'} test`}
+            className={`${active ? 'active' : 'idle'} node`}
             onClick={() => {
                 /* selector(lID) */
                 setSelected(props.index);
@@ -163,11 +163,18 @@ const Node = (props: any) => {
             }}>
             {
                 cue ? <>
-                    <p>{cue.name}</p>
-                    <p>{cue.getLength()}</p>
+                    <h2>{cue.name}</h2>
+                    <p className="description">{cue.description}</p>
+                    <div className="footer">
+                        <p>Play/Pause</p>
+                        <div className="time">
+                            <p>0:22</p>
+                            <p className="indicator"> </p>
+                        </div>
+                    </div>
                 </>
                     :
-                    ''
+                    <></>
             }
         </div>
     )
