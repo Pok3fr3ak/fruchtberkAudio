@@ -1,4 +1,5 @@
 import { Cue, db, Layer } from "@/electron/DB";
+import { UtilityManager } from "./Utility";
 
 interface Cache {
     id: number,
@@ -40,6 +41,7 @@ class AudioManager {
 
 class CuePlayer {
     id: number;
+    cueID: number;
     cue: Cue;
     cachedFiles: Array<Cache>;
     playing: Array<DOMCache>;
@@ -56,7 +58,8 @@ class CuePlayer {
     intervalFunctionID: any;
 
     constructor(cue: Cue) {
-        this.id = cue.id;
+        this.id = UtilityManager.getNewID();
+        this.cueID = cue.id;
         this.cue = cue;
         this.cachedFiles = [];
         this.playing = [];

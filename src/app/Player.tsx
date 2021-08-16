@@ -1,5 +1,6 @@
 import { Cue, db, Project } from "@/electron/DB";
 import React, { useContext, useEffect, useState } from "react"
+import { audioManager } from "./AudioManager";
 import { Application, BackButton, Content, CueCard, Header, MenuColumn, Overlay, ToolColumn } from './components';
 
 interface TriggerInfo {
@@ -127,6 +128,17 @@ const Group = (props: GroupProps) => {
         //With crossfade
         if (currPlaying !== null && currPlaying !== undefined) {
             //console.log(currPlaying, selectedCues[currPlaying]);
+            let cue = selectedCues[currPlaying];
+            if(cue !== null){
+                audioManager.addCueToPlayer(cue);
+                audioManager.playCue(cue);
+            }
+
+            if(triggerSwitch.lastPlaying !== null){
+                let lastCue = selectedCues[triggerSwitch.lastPlaying];
+                if(lastCue !== null && lastCue !== undefined) audioManager.stopCue(lastCue)
+            }
+
         }
     }, [currPlaying])
 
