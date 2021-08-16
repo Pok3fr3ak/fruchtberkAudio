@@ -37,7 +37,9 @@ export const Player = (props: any) => {
 
     const [selectionActive, setSelectionActive] = useState(false);
     const [selected, setSelected] = useState<number>(0);
-    const [currCue, setCurrCue] = useState<Cue | null>(null)
+    const [currCue, setCurrCue] = useState<Cue | null>(null);
+
+    const [playing, setPlaying] = useState(false);
 
     const selectionValue = { selectionActive, setSelectionActive, selected, setSelected, currCue, setCurrCue };
 
@@ -51,6 +53,11 @@ export const Player = (props: any) => {
                     <Header>
                         <h1>David Guetta: {project.name}</h1>
                         <div>
+                            <button
+                                onClick={()=>{
+                                    setPlaying(!playing);
+                                }}
+                            >{playing ? 'Pause' : 'Play'}</button>
                             <button>Save</button>
                         </div>
                     </Header>
@@ -63,6 +70,7 @@ export const Player = (props: any) => {
                                         <Group
                                             key={i}
                                             index={i + 1}
+                                            playing={playing}
                                         />
                                     )
                                 })
@@ -83,7 +91,13 @@ export const Player = (props: any) => {
     )
 }
 
-const Group = (props: any) => {
+interface GroupProps{
+    index: number,
+    playing: boolean,
+}
+
+const Group = (props: GroupProps) => {
+    const playing = props.playing;
 
     const [numberOfNodes, setNumberOfNodes] = useState(1);
     const [triggerSwitch, setTriggerSwitch] = useState<TriggerInfo>({
@@ -111,10 +125,18 @@ const Group = (props: any) => {
     useEffect(() => {
         //Call to Audio Manager to play the right cue and stop the other
         //With crossfade
-        if(currPlaying !== null && currPlaying !== undefined){
+        if (currPlaying !== null && currPlaying !== undefined) {
             //console.log(currPlaying, selectedCues[currPlaying]);
         }
     }, [currPlaying])
+
+    useEffect(()=>{
+        if(playing === true){
+            setCurrPlaying(0);
+        } else if(playing === false){
+            setCurrPlaying(null)
+        }
+    }, [playing])
 
     return (
         <div className="nodeGroup">
@@ -133,6 +155,7 @@ const Group = (props: any) => {
                                 i < arr.length - 1 ?
                                     <Switcher
                                         index={i}
+                                        active={currPlaying === null ? true : false}
                                         direction={typeof triggerSwitch.toPlay === 'number' && triggerSwitch.toPlay > i ? 'left' : 'right'}
                                         triggerSwitch={triggerSwitch}
                                         setTriggerSwitch={setTriggerSwitch}
@@ -231,6 +254,7 @@ interface SwitcherProps {
     direction: string,
     index: number,
     triggerSwitch: TriggerInfo,
+    active: boolean
     setTriggerSwitch: (obj: any) => void
 }
 
@@ -239,12 +263,14 @@ const Switcher = (props: SwitcherProps) => {
     const direction = props.direction;
 
     return (
-        <button onClick={
-            () => props.setTriggerSwitch({
-                trigger: true,
-                toPlay: direction === 'right' ? props.index + 1 : props.index,
-                lastPlaying: props.index
-            })}
+        <button
+            onClick={
+                () => props.setTriggerSwitch({
+                    trigger: true,
+                    toPlay: direction === 'right' ? props.index + 1 : props.index,
+                    lastPlaying: props.index
+                })}
+            disabled={props.active}
         >{direction}</button>
     )
 }
@@ -262,15 +288,15 @@ const Selector = (props: any) => {
                     return (
                         <li
                             key={i}
-                            onClick={(ev)=> {
+                            onClick={(ev) => {
                                 setCurrCue(x)
                                 setSelectionActive(false)
                             }}
                         >
-                                <CueCard
-                                    cue={x}
-                                    optionalClass="max-width-50ch"
-                                />
+                            <CueCard
+                                cue={x}
+                                optionalClass="max-width-50ch"
+                            />
                         </li>
                     )
                 })
