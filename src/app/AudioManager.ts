@@ -165,6 +165,12 @@ class CuePlayer {
     generateID(): number {
         let unique = Math.floor(Math.random() * 1000);
 
+        while(this.IDs.has(unique)){
+            unique = Math.floor(Math.random() * 1000);
+        }
+
+        this.IDs.add(unique);        
+
         return unique;
     }
 
