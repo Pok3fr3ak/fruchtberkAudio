@@ -33,16 +33,16 @@ const Track = (props: any) => {
 
   const evListenerFADEIN = (ev: any) => {
     ev.target.requestPointerLock();
-    console.log(ev.clientX, ev);
+    //console.log(ev.clientX, ev);
     layer.fadeIN += ev.movementX * (1 / scale);
-    console.log(layer);
+    //console.log(layer);
     setFadeInLength(layer.fadeIN);
   }
 
   const evListenerFADEOUT = (ev: any) => {
     ev.target.requestPointerLock();
     layer.fadeOUT += ev.movementX * -1 * (1 / scale);
-    console.log(ev.clientX, ev);
+    //console.log(ev.clientX, ev);
     setFadeOutLength(layer.fadeOUT);
   }
 
@@ -50,7 +50,7 @@ const Track = (props: any) => {
     ev.target.requestPointerLock();
     layer.start += ev.movementX * (1 / scale);
     setStart(layer.start)
-    console.log('start is: ', layer.start);
+    //console.log('start is: ', layer.start);
   }
 
   useEffect(() => {
