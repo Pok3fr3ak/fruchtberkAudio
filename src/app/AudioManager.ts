@@ -58,7 +58,7 @@ class CuePlayer {
     intervalFunctionID: any;
 
     constructor(cue: Cue) {
-        this.id = UtilityManager.getNewID();
+        this.id = 0;
         this.cueID = cue.id;
         this.cue = cue;
         this.cachedFiles = [];
