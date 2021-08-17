@@ -164,12 +164,12 @@ class DB {
     path: any;
     data: DATA;
     default: string;
-    IDs: Set<Number>;
+    IDs: Map<string, number>;
 
     constructor() {
         this.default = JSON.stringify(defaultDB, customStringify);
         this.data = this.parseDB();
-        this.IDs = new Set();
+        this.IDs = new Map<string, number>()
     }
 
     save() {
@@ -181,6 +181,7 @@ class DB {
         return JSON.parse(localStorage.getItem('db') || this.default, customParse);
     }
 
+
     clearDB() {
         localStorage.clear();
     }
@@ -190,13 +191,9 @@ class DB {
             return x.name === project;
         })
         
-        if (prj === undefined) {
-            throw ('Project could not be found or does not exist');
-        }
+        if (prj === undefined) throw ('Project could not be found or does not exist');
 
-        const cue = prj?.cueList.find(x => {
-            return x.name === name;
-        });
+        const cue = prj?.cueList.find(x => x.name === name);
 
         if (cue) {
             return cue;
@@ -210,15 +207,9 @@ class DB {
         
         const cueName = this.getCue(project, cue);
 
-        if (!cueName) {
-            throw ('Layer could not be found, because Cue could not be found or does not exist');
-        }
+        if (!cueName) throw ('Layer could not be found, because Cue could not be found or does not exist');
 
-        const layer = cueName.files.find(x => {
-            console.log(x.name, name, x.name === name);
-            
-            return x.name === name
-        })
+        const layer = cueName.files.find(x => x.name === name)
        
         if (layer) {
             return layer;
@@ -244,14 +235,39 @@ class DB {
         }
     }
 
+    addID(key: string){
+        let id =  this.generateID()
+        this.IDs.set(key, id);
+
+        console.log(this.IDs);
+        
+        return id
+    }
+
+    getID(key: string){
+        return this.IDs.get(key);
+    }
+
     generateID():number{
         let id = Math.floor(Math.random() * 1000);
 
-        while(this.IDs.has(id)){
+        let done = this.checkID(id);
+
+        while(done === false){
             id = Math.floor(Math.random() * 1000);
+            done = this.checkID(id);
         }
 
         return id;
+    }
+
+    checkID(id: number): boolean{
+        let status = true;
+        this.IDs.forEach((v, k) => {
+            if(v === id) status = false; 
+        })
+
+        return status
     }
 
     parseUrl(string: string): string{
