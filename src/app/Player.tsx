@@ -55,7 +55,7 @@ export const Player = (props: any) => {
                         <h1>David Guetta: {project.name}</h1>
                         <div>
                             <button
-                                onClick={()=>{
+                                onClick={() => {
                                     setPlaying(!playing);
                                 }}
                             >{playing ? 'Pause' : 'Play'}</button>
@@ -69,7 +69,7 @@ export const Player = (props: any) => {
                                 pairs.map((x, i) => {
                                     return (
                                         <Group
-                                            key={i+1}
+                                            key={i + 1}
                                             index={i + 1}
                                             playing={playing}
                                         />
@@ -92,12 +92,12 @@ export const Player = (props: any) => {
     )
 }
 
-interface GroupProps{
+interface GroupProps {
     index: number,
     playing: boolean,
 }
 
-interface SelectedCues{
+interface SelectedCues {
     cue: Cue,
     id: number
 }
@@ -134,23 +134,23 @@ const Group = (props: GroupProps) => {
         if (currPlaying !== null && currPlaying !== undefined) {
             //console.log(currPlaying, selectedCues[currPlaying]);
             let cue = selectedCues[currPlaying];
-            if(cue !== null){
+            if (cue !== null) {
                 audioManager.addCueToPlayer(cue.cue, cue.id);
                 audioManager.playCue(cue.id);
             }
 
-            if(triggerSwitch.lastPlaying !== null){
+            if (triggerSwitch.lastPlaying !== null) {
                 let lastCue = selectedCues[triggerSwitch.lastPlaying];
-                if(lastCue !== null && lastCue !== undefined) audioManager.stopCue(lastCue.id)
+                if (lastCue !== null && lastCue !== undefined) audioManager.stopCue(lastCue.id)
             }
 
         }
     }, [currPlaying])
 
-    useEffect(()=>{
-        if(playing === true){
+    useEffect(() => {
+        if (playing === true) {
             setCurrPlaying(0);
-        } else if(playing === false){
+        } else if (playing === false) {
             setCurrPlaying(null)
         }
     }, [playing])
@@ -205,6 +205,7 @@ const Node = (props: NodeProps) => {
 
     const [cue, setCue] = useState<Cue>();
     const [active, setActive] = useState(false);
+    const [time, setTime] = useState(0);
 
     const { selectionActive, setSelectionActive, selected, setSelected, currCue, setCurrCue } = useContext(SelectionContext);
 
@@ -232,12 +233,24 @@ const Node = (props: NodeProps) => {
             if (currCue !== null && currCue !== undefined) {
                 setCue(currCue);
                 let newCueArr = selectedCues;
-                newCueArr[props.localIndex] = {cue: currCue, id: id}
+                newCueArr[props.localIndex] = { cue: currCue, id: id }
                 setSelectedCues(newCueArr)
             }
             setCurrCue(null)
         }
     }, [currCue])
+
+    useEffect(() => {
+        let timer: any;
+        console.log(`Playing something new: ${props.currPlaying}`);
+        if (props.currPlaying === props.localIndex){
+            timer = window.setInterval(()=> {
+                setTime(time => time + 1)
+            }, 1000)
+        }
+
+        return () => window.clearInterval(timer);
+    }, [props.currPlaying])
 
     return (
         <div
@@ -257,7 +270,7 @@ const Node = (props: NodeProps) => {
                     <div className="footer">
                         <p>Play/Pause</p>
                         <div className="time">
-                            <p>0:22</p>
+                            <p>{props.currPlaying === props.localIndex ? time : cue.getLength()}</p>
                             <p className="indicator"> </p>
                         </div>
                     </div>
