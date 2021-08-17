@@ -169,25 +169,18 @@ class DB {
     constructor() {
         this.default = JSON.stringify(defaultDB, customStringify);
         this.data = this.parseDB();
-        this.IDs = this.parseID();
+        this.IDs = new Map<string, number>()
     }
 
     save() {
         console.log('DB Saved');
         localStorage.setItem('db', JSON.stringify(this.data, customStringify))
-        localStorage.setItem('id', JSON.stringify(this.IDs))
     }
 
     parseDB(): DATA {
         return JSON.parse(localStorage.getItem('db') || this.default, customParse);
     }
 
-    parseID(): Map<string, number>{
-        let ids = localStorage.getItem('id');
-        if(ids) return new Map(JSON.parse(ids))
-
-        return new Map();
-    }
 
     clearDB() {
         localStorage.clear();
@@ -243,7 +236,12 @@ class DB {
     }
 
     addID(key: string){
-        this.IDs.set(key, this.generateID());
+        let id =  this.generateID()
+        this.IDs.set(key, id);
+
+        console.log(this.IDs);
+        
+        return id
     }
 
     getID(key: string){

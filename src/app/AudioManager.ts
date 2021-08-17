@@ -19,17 +19,17 @@ class AudioManager {
         this.cues = [];
     }
 
-    addCueToPlayer(cue: Cue) {
-        this.cues.push(new CuePlayer(cue));
-        this.cues[this.findCue(cue.id)].prepareCue();
+    addCueToPlayer(cue: Cue, id:number) {
+        this.cues.push(new CuePlayer(cue, id));
+        this.cues[this.findCue(id)].prepareCue();
     }
 
-    playCue(cue:Cue){
-        this.cues[this.findCue(cue.id)].playCue();
+    playCue(id:number){
+        this.cues[this.findCue(id)].playCue();
     }
 
-    stopCue(cue: Cue){
-        this.cues[this.findCue(cue.id)].stopCue();
+    stopCue(id: number){
+        this.cues[this.findCue(id)].stopCue();
     }
 
     findCue(id: number): number {
@@ -57,8 +57,8 @@ class CuePlayer {
     starterFunctionID: any;
     intervalFunctionID: any;
 
-    constructor(cue: Cue) {
-        this.id = 0;
+    constructor(cue: Cue, id: number) {
+        this.id = id
         this.cueID = cue.id;
         this.cue = cue;
         this.cachedFiles = [];
@@ -121,6 +121,8 @@ class CuePlayer {
     }
 
     playCue() {
+        console.log(`Playin Cue ${this.id}`);
+        
         if (this.currentlyPlaying === false) {
             this.starterFunctionID = window.setInterval(this.starterFunction.bind(this), 10);
             this.intervalFunctionID = window.setInterval(this.intervalFunction.bind(this), 10);
@@ -133,11 +135,18 @@ class CuePlayer {
     }
 
     stopCue() {
+        console.log(`Stopped Cue ${this.id}`);
+        
         //console.trace();
         this.time = 0;
         this.currentlyPlaying = false;
         window.clearInterval(this.starterFunctionID);
         window.clearInterval(this.intervalFunctionID);
+
+        this.playing.forEach(x => {
+            x.element.pause();
+        })
+
         //console.log(this.cachedFiles, this.playing);
     }
 

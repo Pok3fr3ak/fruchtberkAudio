@@ -74,8 +74,8 @@ const CueEditor = (props: any) => {
           <div>
             <button
               onClick={() => {
-                audioManager.addCueToPlayer(cue);
-                audioManager.playCue(cue);
+                audioManager.addCueToPlayer(cue, cue.id);
+                audioManager.playCue(cue.id);
               }}
             >TestPlay</button>
             <button onClick={() => {

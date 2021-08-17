@@ -69,7 +69,7 @@ export const Player = (props: any) => {
                                 pairs.map((x, i) => {
                                     return (
                                         <Group
-                                            key={i}
+                                            key={i+1}
                                             index={i + 1}
                                             playing={playing}
                                         />
@@ -97,6 +97,11 @@ interface GroupProps{
     playing: boolean,
 }
 
+interface SelectedCues{
+    cue: Cue,
+    id: number
+}
+
 const Group = (props: GroupProps) => {
     const playing = props.playing;
 
@@ -107,7 +112,7 @@ const Group = (props: GroupProps) => {
         toPlay: 0
     });
     const [currPlaying, setCurrPlaying] = useState<number | null>(null);
-    const [selectedCues, setSelectedCues] = useState<Array<Cue | null>>([]);
+    const [selectedCues, setSelectedCues] = useState<Array<SelectedCues | null>>([]);
 
     const Nodes = [...Array(numberOfNodes)].map((x, i) => i);
 
@@ -130,13 +135,13 @@ const Group = (props: GroupProps) => {
             //console.log(currPlaying, selectedCues[currPlaying]);
             let cue = selectedCues[currPlaying];
             if(cue !== null){
-                audioManager.addCueToPlayer(cue);
-                audioManager.playCue(cue);
+                audioManager.addCueToPlayer(cue.cue, cue.id);
+                audioManager.playCue(cue.id);
             }
 
             if(triggerSwitch.lastPlaying !== null){
                 let lastCue = selectedCues[triggerSwitch.lastPlaying];
-                if(lastCue !== null && lastCue !== undefined) audioManager.stopCue(lastCue)
+                if(lastCue !== null && lastCue !== undefined) audioManager.stopCue(lastCue.id)
             }
 
         }
@@ -188,13 +193,15 @@ interface NodeProps {
     index: number,
     localIndex: number,
     currPlaying: number | null,
-    selectedCues: Array<Cue | null>,
-    setSelectedCues: (selCue: Array<Cue | null>) => void
+    selectedCues: Array<SelectedCues | null>,
+    setSelectedCues: (selCue: Array<SelectedCues | null>) => void
 }
 
 const Node = (props: NodeProps) => {
     const selectedCues = props.selectedCues;
     const setSelectedCues = props.setSelectedCues;
+
+    const id: number = db.getID(`node-${props.index}`) || db.addID(`node-${props.index}`)
 
     const [cue, setCue] = useState<Cue>();
     const [active, setActive] = useState(false);
@@ -225,7 +232,7 @@ const Node = (props: NodeProps) => {
             if (currCue !== null && currCue !== undefined) {
                 setCue(currCue);
                 let newCueArr = selectedCues;
-                newCueArr[props.localIndex] = currCue
+                newCueArr[props.localIndex] = {cue: currCue, id: id}
                 setSelectedCues(newCueArr)
             }
             setCurrCue(null)
