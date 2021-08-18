@@ -36,12 +36,22 @@ const App = () => {
 
 const Home = () => {
   return (
-    <div>
-      <div>
-        <Link to="/projectList">Edit Projects</Link>
+    <div id="startScreen">
+      <div className="mainLink">
+        <Link to="/projectList">
+          <figure>
+            <img src="/assets/hz.jpg" alt="Der Man" />
+          </figure>
+          <p>Edit Projects</p>
+        </Link>
       </div>
-      <div>
-        <Link to="/player">Be the DJ</Link>
+      <div className="mainLink">
+        <Link to="/player">
+          <figure>
+            <img src="/assets/guetta.jpg" alt="Der DJ" />
+          </figure>
+          <p>Be the DJ</p>
+        </Link>
       </div>
     </div>
   )

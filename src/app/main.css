@@ -71,6 +71,7 @@ label[for=description] {
 #app-overlay #overlayBG {
   background-color: var(--bg-color);
   z-index: 1;
+  opacity: 0.5;
 }
 #app-overlay.idle {
   z-index: -100;
@@ -142,6 +143,37 @@ label[for=description] {
 }
 
 /* SPECIFIC CLASSES */
+#startScreen {
+  grid-column: 2;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.mainLink {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2em;
+  background-color: var(--bg-color-light);
+  border-radius: var(--border-radius);
+}
+.mainLink a {
+  text-decoration: none;
+}
+.mainLink p {
+  text-align: center;
+  text-decoration: none;
+}
+.mainLink figure {
+  margin: 0;
+}
+.mainLink:hover {
+  background-color: var(--bg-color-light-highlight);
+}
+
 .panel {
   padding: 0.5em;
   border-radius: var(--border-radius);
