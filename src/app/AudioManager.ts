@@ -167,6 +167,8 @@ class CuePlayer {
     playFile(data: Layer, el: HTMLAudioElement) {
         if (data.fadeIN_Active) {
             el.volume = 0;
+        } else {
+            el.volume = data.volume;
         }
         el.play();
     }
