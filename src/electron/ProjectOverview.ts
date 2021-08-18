@@ -2,14 +2,14 @@ import { app, BrowserWindow } from 'electron';
 import isDev from 'electron-is-dev'
 
 export class ProjectOverview {
-  public readonly window: BrowserWindow;
+  public readonly mainWindow: BrowserWindow;
 
   constructor() {
-    this.window = this.createWindow();
+    this.mainWindow = this.createWindow();
   }
 
   createWindow(): BrowserWindow {
-    const window = new BrowserWindow({
+    const mainWindow = new BrowserWindow({
       width: 1200,
       height: 720,
       show: true, // This will show the window on launch time.
@@ -19,10 +19,13 @@ export class ProjectOverview {
       }
     })
 
-    window.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     // Load our index.html
-    window.loadURL(isDev ? 'http://localhost:9000' : `file://${app.getAppPath()}/index.html`)
-    return window;
+    console.log(process.env);
+    
+    //@ts-ignore
+    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+    return mainWindow;
   }
 }

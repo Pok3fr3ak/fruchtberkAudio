@@ -8,7 +8,8 @@ module.exports={
                     {
                         html:"./index.html",
                         js: "./renderer.js",
-                        name:"FruchtberkAudio"
+                        name: "main_window",
+                        nodeIntegration: true
                     }
                 ]
             }

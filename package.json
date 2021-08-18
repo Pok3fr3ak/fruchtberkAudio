@@ -34,7 +34,7 @@
     "concurrently": "^6.2.0",
     "copy-webpack-plugin": "^7.0.0",
     "css-loader": "^5.0.2",
-    "electron": "^11.2.3",
+    "electron": "^11.4.12",
     "electron-devtools-installer": "^3.2.0",
     "electron-is-dev": "^2.0.0",
     "html-webpack-plugin": "^5.1.0",
