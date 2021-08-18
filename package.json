@@ -6,16 +6,22 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "start": "npm run build && electron dist/main.js",
+    "start": "electron-forge start",
     "react:dev": "webpack serve --mode=development",
     "electron:dev": "nodemon",
-    "dev": "concurrently --kill-others \"npm run react:dev\" \"npm run electron:dev\""
+    "dev": "concurrently --kill-others \"npm run react:dev\" \"npm run electron:dev\"",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.59",
+    "@electron-forge/maker-deb": "^6.0.0-beta.59",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.59",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.59",
+    "@electron-forge/maker-zip": "^6.0.0-beta.59",
     "@types/copy-webpack-plugin": "^6.4.0",
     "@types/history": "^4.7.8",
     "@types/jest": "^26.0.20",
@@ -45,10 +51,38 @@
   },
   "dependencies": {
     "electron-context-menu": "^2.5.0",
+    "electron-squirrel-startup": "^1.0.0",
     "file-loader": "^6.2.0",
     "hash-history": "^0.1.1",
     "history": "^5.0.0",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "fruchtberk_audio"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   }
 }
