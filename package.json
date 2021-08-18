@@ -1,8 +1,8 @@
 {
   "name": "fruchtberk-audio",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A Cross-Plattform Application for use during D&D",
+  "main": "./dist/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
@@ -14,7 +14,7 @@
     "make": "electron-forge make"
   },
   "keywords": [],
-  "author": "",
+  "author": "Pok3freak",
   "license": "ISC",
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.59",
@@ -50,6 +50,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
+    "@electron-forge/plugin-webpack": "^6.0.0-beta.59",
     "electron-context-menu": "^2.5.0",
     "electron-squirrel-startup": "^1.0.0",
     "file-loader": "^6.2.0",
