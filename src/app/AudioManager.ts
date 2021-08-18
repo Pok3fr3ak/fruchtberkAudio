@@ -17,18 +17,19 @@ class AudioManager {
 
     constructor() {
         this.cues = [];
+        //this.cleanUP();
     }
 
-    addCueToPlayer(cue: Cue, id:number) {
+    addCueToPlayer(cue: Cue, id: number) {
         this.cues.push(new CuePlayer(cue, id));
         this.cues[this.findCue(id)].prepareCue();
     }
 
-    playCue(id:number){
+    playCue(id: number) {
         this.cues[this.findCue(id)].playCue();
     }
 
-    stopCue(id: number){
+    stopCue(id: number) {
         this.cues[this.findCue(id)].stopCue();
     }
 
@@ -37,55 +38,46 @@ class AudioManager {
             return x.id == id;
         })
     }
+
+
 }
 
 class CuePlayer {
     id: number;
     cueID: number;
     cue: Cue;
-    cachedFiles: Array<Cache>;
+    cachedFiles: Array<DOMCache>;
+    depricated: Array<HTMLAudioElement>;
     playing: Array<DOMCache>;
-    
+    time: number;
     currentlyPlaying: boolean;
     entryPoint: HTMLElement;
     IDs: Set<Number>;
-    time: number;
     overalVolume: number;
-    
-    starterFunction: any;
+
     intervalFunction: any;
-    starterFunctionID: any;
+    starterFunctionIDs: Array<number>;
     intervalFunctionID: any;
+
+    cleanUP: any;
 
     constructor(cue: Cue, id: number) {
         this.id = id
         this.cueID = cue.id;
         this.cue = cue;
         this.cachedFiles = [];
+        this.depricated = [];
         this.playing = [];
         this.currentlyPlaying = false;
         this.entryPoint = this.getEntryPoint();
         this.IDs = new Set();
         this.time = 0;
         this.overalVolume = 1;
-        this.starterFunction = () => {
-            this.cachedFiles.forEach(x => {
-                //console.log(this.time, x.layer.start);
-                if (this.time >= x.layer.start) {
-                    //console.log('New File Playing');
-                    this.cachedFiles.splice(this.cachedFiles.indexOf(x), 1);
-                    const y = {
-                        id: x.id,
-                        layer: x.layer,
-                        element: document.getElementById(`${x.id}`) as HTMLAudioElement
-                    }
-                    this.playFile(x.layer, y.element)
-                    this.playing.push(y);
-                }
-            })
-        }
+        this.starterFunctionIDs = [];
+        //this.intervalFunctionIDs = [];
+
         this.intervalFunction = () => {
-            this.time += 10;
+            //this.time += 10;
             this.playing.forEach(x => {
                 if (x.element.currentTime * 1000 <= x.layer.fadeIN) {
                     x.element.volume += (((x.layer.volume / 100) / x.layer.fadeIN) * 10) * this.overalVolume;
@@ -111,20 +103,55 @@ class CuePlayer {
 
     prepareCue() {
         this.cue.files.forEach((x, i) => {
+            let id = this.generateID()
             this.cachedFiles.push({
-                id: this.generateID(),
-                layer: x
+                id: id,
+                layer: x,
+                element: this.prepareSingle(x, id)
             })
         })
+    }
 
-        this.prepareAudio();
+
+    prepareSingle(layer: Layer, id: number) {
+        let audioElement = document.createElement('audio');
+        audioElement.setAttribute('id', `${id}`);
+        let sourceElement = document.createElement('source');
+        sourceElement.setAttribute('src', `file://${layer.filePath}`);
+
+        audioElement.appendChild(sourceElement)
+
+        this.entryPoint.appendChild(audioElement);
+        
+        return audioElement
     }
 
     playCue() {
-        console.log(`Playin Cue ${this.id}`);
+        console.log("Starting Cue: ", this.cachedFiles);
         
+        console.log(`Playin Cue ${this.id}`);
+
         if (this.currentlyPlaying === false) {
-            this.starterFunctionID = window.setInterval(this.starterFunction.bind(this), 10);
+
+            this.cachedFiles.forEach(x => {
+                //console.log(this.time, x.layer.start);
+                let id = window.setTimeout(() => {
+                    console.log(this.time, x.layer.start);
+
+                    this.cachedFiles.splice(this.cachedFiles.indexOf(x), 1);
+                    const y = {
+                        id: x.id,
+                        layer: x.layer,
+                        element: document.getElementById(`${x.id}`) as HTMLAudioElement
+                    }
+                    this.playFile(x.layer, y.element)
+                    this.playing.push(y);
+                }, x.layer.start)
+
+                this.starterFunctionIDs.push(id)
+            })
+
+            //this.starterFunctionID = window.setInterval(this.starterFunction.bind(this), 10);
             this.intervalFunctionID = window.setInterval(this.intervalFunction.bind(this), 10);
             this.currentlyPlaying = true;
         } else {
@@ -136,18 +163,23 @@ class CuePlayer {
 
     stopCue() {
         console.log(`Stopped Cue ${this.id}`);
-        
-        //console.trace();
-        this.time = 0;
+
         this.currentlyPlaying = false;
-        window.clearInterval(this.starterFunctionID);
-        window.clearInterval(this.intervalFunctionID);
+        this.starterFunctionIDs.forEach(x => window.clearTimeout(x));
+        //window.clearInterval(this.starterFunctionID);
+        //window.clearInterval(this.intervalFunctionID);
 
         this.playing.forEach(x => {
             x.element.pause();
+            x.element.remove();
         })
 
-        //console.log(this.cachedFiles, this.playing);
+        this.cachedFiles.forEach(x => {
+            x.element.remove();
+        })
+        
+        this.playing = [];
+        this.cachedFiles = [];
     }
 
     playFile(data: Layer, el: HTMLAudioElement) {
@@ -157,31 +189,14 @@ class CuePlayer {
         el.play();
     }
 
-    prepareAudio() {
-        this.cachedFiles.forEach(x => {
-            this.prepareSingle(x)
-        })
-    }
-
-    prepareSingle(cachedFile: Cache) {
-        let audioElement = document.createElement('audio');
-        audioElement.setAttribute('id', `${cachedFile.id}`);
-        let sourceElement = document.createElement('source');
-        sourceElement.setAttribute('src', `file://${cachedFile.layer.filePath}`);
-
-        audioElement.appendChild(sourceElement)
-
-        this.entryPoint.appendChild(audioElement);
-    }
-
     generateID(): number {
         let unique = Math.floor(Math.random() * 1000);
 
-        while(this.IDs.has(unique)){
+        while (this.IDs.has(unique)) {
             unique = Math.floor(Math.random() * 1000);
         }
 
-        this.IDs.add(unique);        
+        this.IDs.add(unique);
 
         return unique;
     }
