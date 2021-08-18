@@ -12,12 +12,13 @@ interface DOMCache {
     element: HTMLAudioElement
 }
 
+type FadeDirection = 'in' | 'out'
+
 class AudioManager {
     cues: Array<CuePlayer>;
 
     constructor() {
         this.cues = [];
-        //this.cleanUP();
     }
 
     addCueToPlayer(cue: Cue, id: number) {
@@ -38,8 +39,6 @@ class AudioManager {
             return x.id == id;
         })
     }
-
-
 }
 
 class CuePlayer {
@@ -55,11 +54,7 @@ class CuePlayer {
     IDs: Set<Number>;
     overalVolume: number;
 
-    intervalFunction: any;
-    starterFunctionIDs: Array<number>;
-    intervalFunctionID: any;
-
-    cleanUP: any;
+    timeoutIDs: Array<number>;
 
     constructor(cue: Cue, id: number) {
         this.id = id
@@ -73,32 +68,7 @@ class CuePlayer {
         this.IDs = new Set();
         this.time = 0;
         this.overalVolume = 1;
-        this.starterFunctionIDs = [];
-        //this.intervalFunctionIDs = [];
-
-        this.intervalFunction = () => {
-            //this.time += 10;
-            this.playing.forEach(x => {
-                if (x.element.currentTime * 1000 <= x.layer.fadeIN) {
-                    x.element.volume += (((x.layer.volume / 100) / x.layer.fadeIN) * 10) * this.overalVolume;
-                } else if (x.element.currentTime * 1000 >= x.layer.duration - x.layer.fadeOUT && x.element.currentTime * 1000 <= x.layer.duration) {
-                    x.element.volume -= (((x.layer.volume / 100) / x.layer.fadeOUT) * 10) * this.overalVolume;
-                } else {
-                    x.element.volume = (x.layer.volume / 100) * this.overalVolume;
-                }
-
-                //console.log(x, x.element.currentTime * 1000 , x.layer.duration);
-                if (x.layer.loop == false && x.element.currentTime * 1000 >= x.layer.duration) {
-                    x.element.pause();
-                    x.element.remove();
-                    this.playing.splice(this.playing.indexOf(x), 1);
-                    if (this.cachedFiles.length == 0 && this.playing.length == 0) {
-                        this.stopCue();
-                        //console.log(this.time);
-                    }
-                }
-            })
-        }
+        this.timeoutIDs = [];
     }
 
     prepareCue() {
@@ -111,7 +81,6 @@ class CuePlayer {
             })
         })
     }
-
 
     prepareSingle(layer: Layer, id: number) {
         let audioElement = document.createElement('audio');
@@ -139,35 +108,48 @@ class CuePlayer {
                     console.log(this.time, x.layer.start);
 
                     this.cachedFiles.splice(this.cachedFiles.indexOf(x), 1);
-                    const y = {
-                        id: x.id,
-                        layer: x.layer,
-                        element: document.getElementById(`${x.id}`) as HTMLAudioElement
+                    this.playFile(x.layer, x.element)
+
+                    if(x.layer.fadeIN_Active){
+                        this.fade(x.element, x.layer.fadeIN, 'in');
                     }
-                    this.playFile(x.layer, y.element)
-                    this.playing.push(y);
+
+                    if(x.layer.fadeOUT_Active){
+                        let fadeOutId = window.setTimeout(()=>{
+                            this.fade(x.element, x.layer.fadeOUT, 'out')
+                        }, (x.layer.duration - x.layer.fadeOUT))
+                        this.timeoutIDs.push(fadeOutId);
+                    }
+
+                    if(x.layer.loop === false){
+                        let stopID = window.setTimeout(()=>{
+                            x.element.pause();
+                            x.element.remove();
+                            this.playing.splice(this.playing.indexOf(x), 1)
+                            if(this.cachedFiles.length === 0 && this.playing.length === 0){
+                                this.stopCue();
+                            }
+                        }, x.layer.duration)
+                    }
+
+                    this.playing.push(x);
                 }, x.layer.start)
 
-                this.starterFunctionIDs.push(id)
+                this.timeoutIDs.push(id)
             })
-
-            //this.starterFunctionID = window.setInterval(this.starterFunction.bind(this), 10);
-            this.intervalFunctionID = window.setInterval(this.intervalFunction.bind(this), 10);
+            //this.intervalFunctionID = window.setInterval(this.intervalFunction.bind(this), 10);
             this.currentlyPlaying = true;
         } else {
             this.stopCue();
             this.playCue();
         }
-        //console.log(this.cachedFiles, this.playing);
     }
 
     stopCue() {
         console.log(`Stopped Cue ${this.id}`);
 
         this.currentlyPlaying = false;
-        this.starterFunctionIDs.forEach(x => window.clearTimeout(x));
-        //window.clearInterval(this.starterFunctionID);
-        //window.clearInterval(this.intervalFunctionID);
+        this.timeoutIDs.forEach(x => window.clearTimeout(x));
 
         this.playing.forEach(x => {
             x.element.pause();
@@ -187,6 +169,27 @@ class CuePlayer {
             el.volume = 0;
         }
         el.play();
+    }
+
+    fade(el: HTMLAudioElement, duration: number, dir: FadeDirection){
+        let interval: number;
+        let amount = 1 / (duration / 5);
+
+        console.log(`Init fade ${dir}`);
+
+        if(dir === 'in'){
+            interval = window.setInterval(()=>{
+                el.volume = Math.min(1, el.volume + amount)
+            }, 5)
+        } else {
+            interval = window.setInterval(()=>{
+                el.volume = Math.max(0, el.volume - amount)
+            }, 5)
+        }
+
+        window.setTimeout(()=>{
+            window.clearInterval(interval);
+        }, duration)
     }
 
     generateID(): number {
