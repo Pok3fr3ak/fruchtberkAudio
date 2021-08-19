@@ -14,10 +14,10 @@ export class ProjectOverview {
       height: 720,
       show: true, // This will show the window on launch time.
       webPreferences: {
+        //webSecurity: false,
         nodeIntegration: true,
         contextIsolation: false,
-        webSecurity: false
-      }
+      },
     })
 
     mainWindow.webContents.openDevTools();
