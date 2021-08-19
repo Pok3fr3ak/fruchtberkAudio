@@ -1,4 +1,4 @@
-import { Cue, db, Project } from "@/electron/DB";
+import { Cue, db, Project } from "../electron/DB";
 import React, { useContext, useEffect, useState } from "react"
 import { audioManager } from "./AudioManager";
 import { Application, BackButton, Content, CueCard, Header, MenuColumn, Overlay, ToolColumn } from './components';

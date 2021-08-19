@@ -1,4 +1,4 @@
-import { db } from "@/electron/DB"
+import { db } from "../electron/DB"
 import React from "react"
 import { Link } from "react-router-dom";
 import { Application, BackButton, Content, Header, MenuColumn, Overlay, ToolColumn } from './components';

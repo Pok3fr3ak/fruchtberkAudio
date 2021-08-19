@@ -1,4 +1,4 @@
-import { db, Layer } from "@/electron/DB";
+import { db, Layer } from "../electron/DB";
 import { ipcRenderer } from "electron";
 import React, { useEffect, useState } from "react";
 import useResizeObserver from "use-resize-observer";

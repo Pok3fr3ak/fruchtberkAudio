@@ -1,4 +1,4 @@
-import { Cue, db, Layer } from "@/electron/DB";
+import { Cue, db, Layer } from "../electron/DB";
 import { UtilityManager } from "./Utility";
 
 interface Cache {

@@ -1,4 +1,4 @@
-import { Cue } from "@/electron/DB"
+import { Cue } from "../electron/DB"
 import React from "react"
 import { Link } from "react-router-dom"
 

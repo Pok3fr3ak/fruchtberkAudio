@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron';
-import isDev from 'electron-is-dev'
+//import isDev from 'electron-is-dev'
 
 export class ProjectOverview {
   public readonly mainWindow: BrowserWindow;
@@ -15,6 +15,7 @@ export class ProjectOverview {
       show: true, // This will show the window on launch time.
       webPreferences: {
         nodeIntegration: true,
+        contextIsolation: false,
         webSecurity: false
       }
     })
@@ -22,8 +23,6 @@ export class ProjectOverview {
     mainWindow.webContents.openDevTools();
 
     // Load our index.html
-    console.log(process.env);
-    
     //@ts-ignore
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
     return mainWindow;

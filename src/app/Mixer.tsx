@@ -1,4 +1,4 @@
-import { db, Layer } from "@/electron/DB";
+import { db, Layer } from "../electron/DB";
 import React, { useEffect, useState } from "react";
 
 const Mixer = (props: any) => {
