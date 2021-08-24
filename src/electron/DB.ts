@@ -1,5 +1,4 @@
 import { defaultDB } from "./db_default";
-import fs from 'fs';
 
 export interface DATA {
     projects: Array<Project>;
@@ -22,7 +21,7 @@ export class Layer {
 
     fadeIN: number;
     fadeIN_Active: boolean;
-    
+
     fadeOUT: number;
     fadeOUT_Active: boolean;
 
@@ -42,7 +41,6 @@ export class Layer {
         this.fadeOUT_Active = false;
 
         this.loop = false;
-
         //get the duration of the File and set maxDuration
 
         //Methods
@@ -84,7 +82,7 @@ export class Cue {
         this.zoomScale = 5;
         this.files = [];
         this.phases = [];
-        this.id = db.generateID();
+        this.id = db !== undefined ? db.generateID() : 0;
 
         //Methods
         this.addFile = this.addFile;
@@ -117,25 +115,25 @@ export class Cue {
         return this;
     }
 
-    getLength(): number{
+    getLength(): number {
         let longtest = 0;
         this.files.forEach(x => {
-            if(x.start + x.duration > longtest){
+            if (x.start + x.duration > longtest) {
                 longtest = x.start + x.duration
             }
         })
         return longtest
     }
 
-    getZoomScale(): number{
+    getZoomScale(): number {
         return this.zoomScale
     }
 
-    setZoomScale(scale: number){
+    setZoomScale(scale: number) {
         this.zoomScale = scale;
     }
 
-    setDescription(description: string){
+    setDescription(description: string) {
         this.description = description;
     }
 
@@ -178,7 +176,39 @@ class DB {
     }
 
     parseDB(): DATA {
-        return JSON.parse(localStorage.getItem('db') || this.default, customParse);
+        console.time()
+        let checkProject = new Project('test');
+        let checkCue = new Cue('test');
+        let checkLayer = new Layer('test');
+
+        let retrievedData: DATA = JSON.parse(localStorage.getItem('db') || this.default, customParse);
+        retrievedData.projects = retrievedData.projects.map((x) => {
+            x.cueList = x.cueList.map(x => {
+                x.files = x.files.map(x => {
+                    return this.checkContent(x, checkLayer, 'layer')
+                })
+                return this.checkContent(x, checkCue, 'cue')
+            })
+            return this.checkContent(x, checkProject, 'project')
+        })
+        return retrievedData
+    }
+
+    checkContent(obj: Object, data: Object, hirarchy?: string): any {
+        Object.getOwnPropertyNames(data).forEach((prop) => {
+            if (!Object.prototype.hasOwnProperty.call(obj, prop)) {
+                obj = Object.assign(data, {
+                    //@ts-ignore
+                    [prop]: data[prop]
+                })
+                console.log(`!!!!Added property ${prop}!!!!`);
+
+            } else {
+                //console.log(`Property: ${prop} exists on object (${hirarchy})`);
+            }
+        })
+
+        return obj
     }
 
 
@@ -190,7 +220,7 @@ class DB {
         const prj = this.data.projects.find(x => {
             return x.name === project;
         })
-        
+
         if (prj === undefined) throw ('Project could not be found or does not exist');
 
         const cue = prj?.cueList.find(x => x.name === name);
@@ -204,13 +234,13 @@ class DB {
 
     getLayer(project: string, cue: string, name: string): Layer {
         console.log(project, cue, name);
-        
+
         const cueName = this.getCue(project, cue);
 
         if (!cueName) throw ('Layer could not be found, because Cue could not be found or does not exist');
 
         const layer = cueName.files.find(x => x.name === name)
-       
+
         if (layer) {
             return layer;
         } else {
@@ -223,7 +253,7 @@ class DB {
         this.save();
     }
 
-    getProject(project: string): Project {           
+    getProject(project: string): Project {
         const prj = this.data.projects.find(x => {
             return x.name === project;
         })
@@ -235,25 +265,25 @@ class DB {
         }
     }
 
-    addID(key: string){
-        let id =  this.generateID()
+    addID(key: string) {
+        let id = this.generateID()
         this.IDs.set(key, id);
 
         console.log(this.IDs);
-        
+
         return id
     }
 
-    getID(key: string){
+    getID(key: string) {
         return this.IDs.get(key);
     }
 
-    generateID():number{
+    generateID(): number {
         let id = Math.floor(Math.random() * 1000);
 
         let done = this.checkID(id);
 
-        while(done === false){
+        while (done === false) {
             id = Math.floor(Math.random() * 1000);
             done = this.checkID(id);
         }
@@ -261,16 +291,16 @@ class DB {
         return id;
     }
 
-    checkID(id: number): boolean{
+    checkID(id: number): boolean {
         let status = true;
         this.IDs.forEach((v, k) => {
-            if(v === id) status = false; 
+            if (v === id) status = false;
         })
 
         return status
     }
 
-    parseUrl(string: string): string{
+    parseUrl(string: string): string {
         return decodeURI(string);
     }
 

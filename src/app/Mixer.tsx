@@ -26,9 +26,9 @@ const Mixer = (props: any) => {
     const panListener = (ev: any) => {
         ev.target.requestPointerLock();
         layer.pan += ev.movementY * -1;
-        if(layer.pan <= -100){
+        if (layer.pan <= -100) {
             layer.pan = -100;
-        } else if(layer.pan >= 100){
+        } else if (layer.pan >= 100) {
             layer.pan = 100;
         }
         setPan(layer.pan)
@@ -68,7 +68,7 @@ const Mixer = (props: any) => {
                             document.exitPointerLock();
                         })
                     }}
-                    style={{transform: `rotateZ(${pan}deg)`}}
+                    style={{ transform: `rotateZ(${pan}deg)` }}
                 >
                     <div className="tip"></div>
                 </div>
@@ -88,4 +88,4 @@ const Mixer = (props: any) => {
     )
 }
 
-export {Mixer}
+export { Mixer }
