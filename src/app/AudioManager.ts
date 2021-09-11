@@ -1,5 +1,6 @@
 import { Cue, db, Layer } from "../electron/DB";
 import { UtilityManager } from "./Utility";
+import fs from 'fs'
 
 interface Cache {
     id: number,
@@ -83,6 +84,9 @@ class CuePlayer {
     }
 
     prepareSingle(layer: Layer, id: number) {
+        /*         let audio = new Audio(`file://${layer.filePath}`)
+                audio.setAttribute('id', `${id}`);
+                this.entryPoint.appendChild(audio); */
         let audioElement = document.createElement('audio');
         audioElement.setAttribute('id', `${id}`);
         let sourceElement = document.createElement('source');
@@ -91,13 +95,67 @@ class CuePlayer {
         audioElement.appendChild(sourceElement)
 
         this.entryPoint.appendChild(audioElement);
-        
+
+        this.play(`${layer.filePath}`)
+        //audioElement.play()
+
+
         return audioElement
+        /* 
+                return audio */
     }
+
+    play(path: string) {
+        let context = new AudioContext();
+        console.log(path);
+        
+        fs.readFile(path, (err, data) => {
+            if(err){
+                console.log(err);
+                return
+            }
+
+            context.decodeAudioData(this.toArrayBuffer(data), (buffer) => {
+                let bufferSrc = context.createBufferSource()
+                bufferSrc.buffer = buffer
+                let gainNode = context.createGain()
+                bufferSrc.connect(gainNode)
+                gainNode.connect(context.destination)
+                gainNode.gain.value = 1
+                bufferSrc.start(0)
+                console.log('Playing');
+            })
+        })
+    }
+/*     playFromBuffer(buffer) {
+        this.stop(false);
+        this.buffer = buffer;
+        this.initSource();
+        this.offsetTime = 0;
+        this.songDuration = this.buffer.duration;
+        this.songStartingTime = this.context.currentTime;
+        this.playbackTime = 0;
+        this.startPlaying();
+      }
+    
+      startPlaying() {
+        this.isPlaying = true;
+        this.source.start(0, this.playbackTime);
+      } */
+
+
+    toArrayBuffer(buffer: any) {
+        const ab = new ArrayBuffer(buffer.length);
+        const view = new Uint8Array(ab);
+        for (let i = 0; i < buffer.length; ++i) {
+          view[i] = buffer[i];
+        }
+        return ab;
+      }
 
     playCue() {
         console.log("Starting Cue: ", this.cachedFiles);
-        
+
         console.log(`Playin Cue ${this.id}`);
 
         if (this.currentlyPlaying === false) {
@@ -110,23 +168,23 @@ class CuePlayer {
                     this.cachedFiles.splice(this.cachedFiles.indexOf(x), 1);
                     this.playFile(x.layer, x.element)
 
-                    if(x.layer.fadeIN_Active){
+                    if (x.layer.fadeIN_Active) {
                         this.fade(x.element, x.layer.fadeIN, 'in');
                     }
 
-                    if(x.layer.fadeOUT_Active){
-                        let fadeOutId = window.setTimeout(()=>{
+                    if (x.layer.fadeOUT_Active) {
+                        let fadeOutId = window.setTimeout(() => {
                             this.fade(x.element, x.layer.fadeOUT, 'out')
                         }, (x.layer.duration - x.layer.fadeOUT))
                         this.timeoutIDs.push(fadeOutId);
                     }
 
-                    if(x.layer.loop === false){
-                        let stopID = window.setTimeout(()=>{
+                    if (x.layer.loop === false) {
+                        let stopID = window.setTimeout(() => {
                             x.element.pause();
                             x.element.remove();
                             this.playing.splice(this.playing.indexOf(x), 1)
-                            if(this.cachedFiles.length === 0 && this.playing.length === 0){
+                            if (this.cachedFiles.length === 0 && this.playing.length === 0) {
                                 this.stopCue();
                             }
                         }, x.layer.duration)
@@ -159,7 +217,7 @@ class CuePlayer {
         this.cachedFiles.forEach(x => {
             x.element.remove();
         })
-        
+
         this.playing = [];
         this.cachedFiles = [];
     }
@@ -173,23 +231,23 @@ class CuePlayer {
         el.play();
     }
 
-    fade(el: HTMLAudioElement, duration: number, dir: FadeDirection){
+    fade(el: HTMLAudioElement, duration: number, dir: FadeDirection) {
         let interval: number;
         let amount = 1 / (duration / 5);
 
         console.log(`Init fade ${dir}`);
 
-        if(dir === 'in'){
-            interval = window.setInterval(()=>{
+        if (dir === 'in') {
+            interval = window.setInterval(() => {
                 el.volume = Math.min(1, el.volume + amount)
             }, 5)
         } else {
-            interval = window.setInterval(()=>{
+            interval = window.setInterval(() => {
                 el.volume = Math.max(0, el.volume - amount)
             }, 5)
         }
 
-        window.setTimeout(()=>{
+        window.setTimeout(() => {
             window.clearInterval(interval);
         }, duration)
     }
