@@ -1,6 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,700;0,800;1,400&display=swap");
 /* font-family: 'Open Sans', sans-serif; */
 /*  RESET  */
+@import url("../assets/fonts.css");
 * {
   font-family: "Open Sans", sans-serif;
   box-sizing: border-box;

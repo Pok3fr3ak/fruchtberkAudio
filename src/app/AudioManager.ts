@@ -179,31 +179,24 @@ class FilePlayer {
     }
 
     fade(direction: FadeDirection, length: number, to?: number) {
-
         if(direction === 'out'){
             return new Promise<void>((resolve, reject) => {
-                console.log(length, this.context.currentTime, this.context.currentTime + length);
                 this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.context.currentTime)
                 this.gainNode.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + length)
-    
                 window.setTimeout(() => resolve(), length * 1000)
             })
         } else {
             return new Promise<void>((resolve, reject) => {
-                console.log(length, this.context.currentTime, this.context.currentTime + length);
                 this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.context.currentTime)
                 this.gainNode.gain.exponentialRampToValueAtTime(to ? to : 1, this.context.currentTime + length)
-    
                 window.setTimeout(() => resolve(), length * 1000)
             })
         }
-
     }
 
     stop() {
         this.buffer.stop();
         console.log('Stopped.');
-
     }
 
     toArrayBuffer(buffer: any) {

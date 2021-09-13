@@ -40,7 +40,7 @@ const Home = () => {
       <div className="mainLink">
         <Link to="/projectList">
           <figure>
-            <img src="./assets/hz.jpg" alt="Der Man" />
+            <img src="/assets/hz.jpg" alt="Der Man" />
           </figure>
           <p>Edit Projects</p>
         </Link>
@@ -48,7 +48,7 @@ const Home = () => {
       <div className="mainLink">
         <Link to="/player">
           <figure>
-            <img src="./assets/guetta.jpg" alt="Der DJ" />
+            <img src="/assets/guetta.jpg" alt="Der DJ" />
           </figure>
           <p>Be the DJ</p>
         </Link>

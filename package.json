@@ -1,7 +1,7 @@
 {
   "name": "fruchtberkaudio",
   "productName": "fruchtberkaudio",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "My Electron application description",
   "main": ".webpack/main",
   "scripts": {
@@ -90,6 +90,7 @@
     "copy-webpack-plugin": "^9.0.1",
     "electron-context-menu": "^3.1.1",
     "electron-squirrel-startup": "^1.0.0",
+    "file-loader": "^6.2.0",
     "fs": "0.0.1-security",
     "html-webpack-plugin": "^5.3.2",
     "path": "^0.12.7",
