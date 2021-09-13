@@ -304,6 +304,10 @@ class DB {
         return decodeURI(string);
     }
 
+    getData(){
+        return this.data
+    }
+
 }
 
 function customStringify(key: any, value: any) {
@@ -326,4 +330,6 @@ function customParse(key: any, value: any) {
     return value;
 }
 
-export const db = new DB();
+const db = new DB();
+
+export {db, customParse, customStringify}

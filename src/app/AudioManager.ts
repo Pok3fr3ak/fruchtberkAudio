@@ -1,5 +1,4 @@
 import { Cue, db, Layer } from "../electron/DB";
-import { UtilityManager } from "./Utility";
 import fs from 'fs'
 
 interface Cache {
@@ -10,7 +9,7 @@ interface Cache {
 interface DOMCache {
     id: number,
     layer: Layer,
-    element: HTMLAudioElement
+    player: FilePlayer
 }
 
 type FadeDirection = 'in' | 'out'
@@ -23,8 +22,10 @@ class AudioManager {
     }
 
     addCueToPlayer(cue: Cue, id: number) {
-        this.cues.push(new CuePlayer(cue, id));
-        this.cues[this.findCue(id)].prepareCue();
+        if (this.findCue(id) === -1) {
+            this.cues.push(new CuePlayer(cue, id));
+            this.cues[this.findCue(id)].prepareCue();
+        }
     }
 
     playCue(id: number) {
@@ -46,156 +47,46 @@ class CuePlayer {
     id: number;
     cueID: number;
     cue: Cue;
-    cachedFiles: Array<DOMCache>;
-    depricated: Array<HTMLAudioElement>;
-    playing: Array<DOMCache>;
-    time: number;
+    files: Array<DOMCache>;
     currentlyPlaying: boolean;
-    entryPoint: HTMLElement;
     IDs: Set<Number>;
     overalVolume: number;
-
-    timeoutIDs: Array<number>;
 
     constructor(cue: Cue, id: number) {
         this.id = id
         this.cueID = cue.id;
         this.cue = cue;
-        this.cachedFiles = [];
-        this.depricated = [];
-        this.playing = [];
+        this.files = [];
         this.currentlyPlaying = false;
-        this.entryPoint = this.getEntryPoint();
         this.IDs = new Set();
-        this.time = 0;
         this.overalVolume = 1;
-        this.timeoutIDs = [];
     }
 
     prepareCue() {
         this.cue.files.forEach((x, i) => {
             let id = this.generateID()
-            this.cachedFiles.push({
+            this.files.push({
                 id: id,
                 layer: x,
-                element: this.prepareSingle(x, id)
+                player: new FilePlayer(x)
             })
         })
     }
-
-    prepareSingle(layer: Layer, id: number) {
-        /*         let audio = new Audio(`file://${layer.filePath}`)
-                audio.setAttribute('id', `${id}`);
-                this.entryPoint.appendChild(audio); */
-        let audioElement = document.createElement('audio');
-        audioElement.setAttribute('id', `${id}`);
-        let sourceElement = document.createElement('source');
-        sourceElement.setAttribute('src', `file://${layer.filePath}`);
-
-        audioElement.appendChild(sourceElement)
-
-        this.entryPoint.appendChild(audioElement);
-
-        this.play(`${layer.filePath}`)
-        //audioElement.play()
-
-
-        return audioElement
-        /* 
-                return audio */
-    }
-
-    play(path: string) {
-        let context = new AudioContext();
-        console.log(path);
-        
-        fs.readFile(path, (err, data) => {
-            if(err){
-                console.log(err);
-                return
-            }
-
-            context.decodeAudioData(this.toArrayBuffer(data), (buffer) => {
-                let bufferSrc = context.createBufferSource()
-                bufferSrc.buffer = buffer
-                let gainNode = context.createGain()
-                bufferSrc.connect(gainNode)
-                gainNode.connect(context.destination)
-                gainNode.gain.value = 1
-                bufferSrc.start(0)
-                console.log('Playing');
-            })
-        })
-    }
-/*     playFromBuffer(buffer) {
-        this.stop(false);
-        this.buffer = buffer;
-        this.initSource();
-        this.offsetTime = 0;
-        this.songDuration = this.buffer.duration;
-        this.songStartingTime = this.context.currentTime;
-        this.playbackTime = 0;
-        this.startPlaying();
-      }
-    
-      startPlaying() {
-        this.isPlaying = true;
-        this.source.start(0, this.playbackTime);
-      } */
-
-
-    toArrayBuffer(buffer: any) {
-        const ab = new ArrayBuffer(buffer.length);
-        const view = new Uint8Array(ab);
-        for (let i = 0; i < buffer.length; ++i) {
-          view[i] = buffer[i];
-        }
-        return ab;
-      }
 
     playCue() {
-        console.log("Starting Cue: ", this.cachedFiles);
-
-        console.log(`Playin Cue ${this.id}`);
-
         if (this.currentlyPlaying === false) {
 
-            this.cachedFiles.forEach(x => {
-                //console.log(this.time, x.layer.start);
-                let id = window.setTimeout(() => {
-                    console.log(this.time, x.layer.start);
-
-                    this.cachedFiles.splice(this.cachedFiles.indexOf(x), 1);
-                    this.playFile(x.layer, x.element)
-
-                    if (x.layer.fadeIN_Active) {
-                        this.fade(x.element, x.layer.fadeIN, 'in');
-                    }
-
-                    if (x.layer.fadeOUT_Active) {
-                        let fadeOutId = window.setTimeout(() => {
-                            this.fade(x.element, x.layer.fadeOUT, 'out')
-                        }, (x.layer.duration - x.layer.fadeOUT))
-                        this.timeoutIDs.push(fadeOutId);
-                    }
-
-                    if (x.layer.loop === false) {
-                        let stopID = window.setTimeout(() => {
-                            x.element.pause();
-                            x.element.remove();
-                            this.playing.splice(this.playing.indexOf(x), 1)
-                            if (this.cachedFiles.length === 0 && this.playing.length === 0) {
-                                this.stopCue();
-                            }
-                        }, x.layer.duration)
-                    }
-
-                    this.playing.push(x);
-                }, x.layer.start)
-
-                this.timeoutIDs.push(id)
+            this.files.forEach(x => {
+                if (x.layer.fadeOUT_Active === true) {
+                    x.player.play().then(() => {
+                        setTimeout(() => {
+                            x.player.fade('out', x.layer.fadeOUT / 1000).then(() => x.player.stop())
+                        }, x.layer.duration - x.layer.fadeOUT)
+                    });
+                } else {
+                    x.player.play(true)
+                }
             })
-            //this.intervalFunctionID = window.setInterval(this.intervalFunction.bind(this), 10);
             this.currentlyPlaying = true;
         } else {
             this.stopCue();
@@ -204,69 +95,141 @@ class CuePlayer {
     }
 
     stopCue() {
-        console.log(`Stopped Cue ${this.id}`);
-
         this.currentlyPlaying = false;
-        this.timeoutIDs.forEach(x => window.clearTimeout(x));
 
-        this.playing.forEach(x => {
-            x.element.pause();
-            x.element.remove();
+        this.files.forEach(x => {
+            x.player.stop();
         })
-
-        this.cachedFiles.forEach(x => {
-            x.element.remove();
-        })
-
-        this.playing = [];
-        this.cachedFiles = [];
     }
 
-    playFile(data: Layer, el: HTMLAudioElement) {
-        if (data.fadeIN_Active) {
-            el.volume = 0;
-        } else {
-            el.volume = data.volume;
-        }
-        el.play();
-    }
-
-    fade(el: HTMLAudioElement, duration: number, dir: FadeDirection) {
-        let interval: number;
-        let amount = 1 / (duration / 5);
-
-        console.log(`Init fade ${dir}`);
-
-        if (dir === 'in') {
-            interval = window.setInterval(() => {
-                el.volume = Math.min(1, el.volume + amount)
-            }, 5)
-        } else {
-            interval = window.setInterval(() => {
-                el.volume = Math.max(0, el.volume - amount)
-            }, 5)
-        }
-
-        window.setTimeout(() => {
-            window.clearInterval(interval);
-        }, duration)
-    }
 
     generateID(): number {
         let unique = Math.floor(Math.random() * 1000);
 
-        while (this.IDs.has(unique)) {
-            unique = Math.floor(Math.random() * 1000);
-        }
+        while (this.IDs.has(unique)) unique = Math.floor(Math.random() * 1000);
 
         this.IDs.add(unique);
-
         return unique;
     }
 
-    getEntryPoint() {
-        return document.getElementById('audioManagerEntry') || document.createElement('div');
+}
+
+class FilePlayer {
+    layer: Layer
+    filePath: string
+    context: AudioContext
+    buffer: AudioBufferSourceNode
+    gainNode: GainNode
+
+    constructor(layer: Layer) {
+        this.layer = layer
+        this.filePath = layer.filePath
+        this.context = new AudioContext();
     }
+
+    init(buffer: AudioBuffer) {
+        this.buffer = this.context.createBufferSource()
+        this.gainNode = this.context.createGain();
+        this.buffer.buffer = buffer
+        this.buffer.connect(this.gainNode)
+        this.gainNode.connect(this.context.destination)
+        if (this.layer.fadeIN_Active === true) {
+            this.gainNode.gain.setValueAtTime(0.0001, 0)
+        } else {
+            this.gainNode.gain.value = (this.layer.volume / 100)
+        }
+
+    }
+
+    play(stop?: boolean) {
+        console.log('Playing..');
+
+        return new Promise<void>((resolve, reject) => {
+            fs.readFile(this.filePath, (err, data) => {
+                if (err) {
+                    reject(err);
+                    return
+                }
+
+                this.context.decodeAudioData(this.toArrayBuffer(data), (buffer) => {
+                    this.init(buffer)
+                    this.buffer.start(this.context.currentTime + (this.layer.start / 1000));
+
+                    if (this.layer.fadeIN_Active === true) {
+                        setTimeout(() => {
+                            this.gainNode.gain.exponentialRampToValueAtTime((this.layer.volume / 100), (this.layer.fadeIN / 1000))
+                            resolve();
+
+                            if (stop === true) {
+                                window.setTimeout(() => {
+                                    this.fade('out', 0.25).then(() => this.stop())
+                                }, this.layer.duration - 0.25)
+                            }
+
+                        }, this.layer.start)
+                    }
+                })
+            })
+        })
+
+    }
+
+    pause() {
+
+    }
+
+    fade(direction: FadeDirection, length: number, to?: number) {
+
+        if(direction === 'out'){
+            return new Promise<void>((resolve, reject) => {
+                console.log(length, this.context.currentTime, this.context.currentTime + length);
+                this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.context.currentTime)
+                this.gainNode.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + length)
+    
+                window.setTimeout(() => resolve(), length * 1000)
+            })
+        } else {
+            return new Promise<void>((resolve, reject) => {
+                console.log(length, this.context.currentTime, this.context.currentTime + length);
+                this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.context.currentTime)
+                this.gainNode.gain.exponentialRampToValueAtTime(to ? to : 1, this.context.currentTime + length)
+    
+                window.setTimeout(() => resolve(), length * 1000)
+            })
+        }
+
+    }
+
+    stop() {
+        this.buffer.stop();
+        console.log('Stopped.');
+
+    }
+
+    toArrayBuffer(buffer: any) {
+        const ab = new ArrayBuffer(buffer.length);
+        const view = new Uint8Array(ab);
+        for (let i = 0; i < buffer.length; ++i) {
+            view[i] = buffer[i];
+        }
+        return ab;
+    }
+
+    /*     playFromBuffer(buffer) {
+      this.stop(false);
+      this.buffer = buffer;
+      this.initSource();
+      this.offsetTime = 0;
+      this.songDuration = this.buffer.duration;
+      this.songStartingTime = this.context.currentTime;
+      this.playbackTime = 0;
+      this.startPlaying();
+    }
+  
+    startPlaying() {
+      this.isPlaying = true;
+      this.source.start(0, this.playbackTime);
+    } */
 
 }
 

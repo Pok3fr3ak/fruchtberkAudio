@@ -1,4 +1,4 @@
-import { Cue, db } from '../electron/DB';
+import { Cue, customStringify, db } from '../electron/DB';
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import './main.css';
@@ -98,6 +98,12 @@ const ProjectList = (props: any) => {
       <ToolColumn>
         <div className="newProject">
           <button onClick={() => { setAddingProject(true); }}>+</button>
+        </div>
+        <div className="saveDB">
+          <button onClick={()=>{
+            let a = db.getData()
+            ipcRenderer.send('exportDB', JSON.stringify(db.data, customStringify));
+          }}>DB exportieren</button>
         </div>
       </ToolColumn>
       <Overlay
