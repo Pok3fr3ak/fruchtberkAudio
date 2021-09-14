@@ -90,3 +90,6 @@ out/
 
 # Documentation
 doc/
+
+# VS-Code settings
+.vscode/
