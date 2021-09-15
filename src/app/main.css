@@ -77,9 +77,58 @@ label[for=description] {
   z-index: -100;
   opacity: 0;
 }
+#app-overlay .wrapper {
+  padding: 2em;
+  background-color: var(--bg-color);
+  border-radius: var(--border-radius);
+}
+#app-overlay .addProject input, #app-overlay .addCue input, #app-overlay .description input {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+#app-overlay .addProject label, #app-overlay .addCue label, #app-overlay .description label {
+  color: var(--text-color);
+  margin-right: 0.5em;
+}
+#app-overlay .addProject .custom-button:not(.text), #app-overlay .addCue .custom-button:not(.text), #app-overlay .description .custom-button:not(.text) {
+  padding: 0;
+}
+#app-overlay .typeDesicion {
+  color: var(--text-color);
+}
+#app-overlay .typeDesicion div {
+  padding: 1em;
+  margin: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+#app-overlay .typeDesicion div:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+#app-overlay .typeDesicion figure {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#app-overlay .typeDesicion figure svg {
+  width: 4em;
+  height: 4em;
+}
+#app-overlay .description {
+  align-items: flex-start;
+  justify-content: center;
+}
 
 #app-main #app-content {
   margin-top: 1.5em;
+}
+
+#app-toolColumn {
+  display: flex;
+  flex-direction: column;
 }
 
 /* VARIABLES */
@@ -142,6 +191,31 @@ label[for=description] {
   max-width: 50ch;
 }
 
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.custom-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--border-radius);
+  transition: background-color 0.15s cubic-bezier(0.57, 0.04, 0.31, 1);
+}
+.custom-button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.custom-button.minor {
+  padding: 0;
+}
+.custom-button.text {
+  padding: 0.5em 1em;
+  font-size: 1em;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
 /* SPECIFIC CLASSES */
 #startScreen {
   grid-column: 2;
@@ -172,6 +246,10 @@ label[for=description] {
 }
 .mainLink:hover {
   background-color: var(--bg-color-light-highlight);
+}
+
+.importDB {
+  margin-top: auto !important;
 }
 
 .panel {
@@ -247,12 +325,18 @@ label[for=description] {
   background-color: var(--bg-color-light-highlight);
 }
 
+.projectCard.no-delete a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .backButtonWrapper {
   height: 2em;
 }
 
 .backButton {
-  border: 2px solid var(--text-color);
+  border: none;
   background-color: transparent;
   height: 100%;
   width: 100%;
@@ -266,6 +350,18 @@ label[for=description] {
   color: var(--text-color);
   font-weight: 700;
   text-decoration: none;
+}
+
+.button-wrapper {
+  background-color: transparent;
+  border: none;
+  margin-top: 0.5em;
+}
+.button-wrapper:first-child {
+  margin-top: 0em;
+}
+.button-wrapper.row {
+  margin-top: 0;
 }
 
 .cueTimeline {

@@ -86,12 +86,73 @@ label[for="description"] {
         z-index: -100;
         opacity: 0;
     }
+
+    .wrapper{
+        padding: 2em;
+        background-color: var(--bg-color);
+        border-radius: var(--border-radius);
+    }
+
+    .addProject, .addCue, .description{
+        input{
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        label{
+            color: var(--text-color);
+            margin-right: 0.5em;
+        }
+
+        .custom-button:not(.text){
+            padding: 0;
+        }
+    }
+
+    .typeDesicion{
+        color: var(--text-color);
+
+        div{
+            padding: 1em;
+            margin: 1em;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+
+            &:hover{
+                background-color: rgba($color: #ffffff, $alpha: 0.15);
+            }
+        }
+
+        figure{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            svg{
+                width: 4em;
+                height: 4em;
+            }
+        }
+    }
+
+    .description{
+        align-items: flex-start;
+        justify-content: center;
+    }
 }
 
 #app-main {
     #app-content {
         margin-top: 1.5em;
     }
+}
+
+#app-toolColumn{
+    display: flex;
+    flex-direction: column;
 }
 
 /* VARIABLES */
@@ -156,6 +217,34 @@ label[for="description"] {
     max-width: 50ch;
 }
 
+.mx-auto{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.custom-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--border-radius);
+    transition: background-color 0.15s cubic-bezier(0.57, 0.04, 0.31, 1);
+
+    &:hover{
+        background-color: rgba($color: #ffffff, $alpha: 0.15);
+    }
+
+    &.minor{
+        padding: 0;
+    }
+
+    &.text{
+        padding: 0.5em 1em;
+        font-size: 1em;
+        font-weight: 700;
+        color: var(--text-color);
+    }
+}
+
 /* SPECIFIC CLASSES */
 
 #startScreen{
@@ -192,6 +281,10 @@ label[for="description"] {
     &:hover{
         background-color: var(--bg-color-light-highlight);
     }
+}
+
+.importDB{
+    margin-top: auto!important;
 }
 
 .panel {
@@ -256,12 +349,18 @@ label[for="description"] {
     }
 }
 
+.projectCard.no-delete a{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .backButtonWrapper {
     height: 2em;
 }
 
 .backButton {
-    border: 2px solid var(--text-color);
+    border: none;
     background-color: transparent;
     height: 100%;
     width: 100%;
@@ -275,6 +374,20 @@ label[for="description"] {
     color: var(--text-color);
     font-weight: 700;
     text-decoration: none;
+}
+
+.button-wrapper{
+    background-color: transparent;
+    border: none;
+    margin-top: 0.5em;
+
+    &:first-child{
+        margin-top: 0em
+    }
+
+    &.row{
+        margin-top: 0;
+    }
 }
 
 .cueTimeline {

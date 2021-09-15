@@ -6,7 +6,8 @@ import { audioManager } from "./AudioManager";
 import { Mixer } from "./Mixer";
 import { TimeStamp } from "./Timestamp";
 import { Track } from "./Track";
-import { Application, BackButton, Content, Header, MenuColumn, Overlay, ToolColumn } from './components';
+import { Application, BackButton, Content, CustomButton, Header, MenuColumn, Overlay, ToolColumn } from './components';
+import { MdAdd, MdTune, MdDescription, MdZoomIn, MdZoomOut, MdPlayArrow, MdClear, MdPause } from 'react-icons/md';
 
 const CueEditor = (props: any) => {
 
@@ -18,6 +19,7 @@ const CueEditor = (props: any) => {
   const [editingDesecription, setEditingDescription] = useState(false);
   const [description, setDescription] = useState(cue.description);
   const [scale, setScale] = useState(cue.getZoomScale());
+  const [playing, setPlaying] = useState(false);
 
   const scaleFactors: Array<number> = [
     1, 0.5, 0.25, 0.1, 0.05, 0.025, 0.01, 0.005, 0.0025, 0.001
@@ -54,14 +56,23 @@ const CueEditor = (props: any) => {
       })
     });
 
+    const finishedPlayingHandler = () => {
+      setPlaying(false)
+    }
+
+    document.addEventListener(`finishedPlaying-${cue.id}`, finishedPlayingHandler)
+
     return () => {
       ipcRenderer.removeAllListeners('file-chosen')
+      document.removeEventListener(`finishedPlaying-${cue.id}`, finishedPlayingHandler)
     };
   }, [])
 
   useEffect(() => {
     cue.setZoomScale(scale)
   }, [scale])
+
+
 
   return (
     <>
@@ -71,44 +82,83 @@ const CueEditor = (props: any) => {
       <Application>
         <Header>
           <h1>{params.cue}</h1>
-          <div>
-            <button
+          <div
+            style={{ display: 'flex' }}
+          >
+            <CustomButton
               onClick={() => {
-                audioManager.addCueToPlayer(cue, cue.id);
-                audioManager.playCue(cue.id);
+                if (playing === false) {
+                  setPlaying(true);
+                  audioManager.addCueToPlayer(cue, cue.id);
+                  audioManager.playCue(cue.id);
+                  //audioManager.on(`${cue.id}-stopped`, () => setPlaying(false))
+                } else {
+                  audioManager.stopCue(cue.id)
+                  setPlaying(false);
+                }
+
               }}
-            >TestPlay</button>
-            <button onClick={() => {
-              setEditingDescription(true);
-            }}>
-              Edit Description
-            </button>
-            <button
+              class="row"
+            >
+              {
+                playing === false ?
+                  <MdPlayArrow />
+                  :
+                  <MdPause />
+              }
+
+            </CustomButton>
+            <CustomButton
+              onClick={() => {
+                setEditingDescription(true);
+              }}
+              class="row"
+            >
+              <MdDescription />
+            </CustomButton>
+            <CustomButton
               onClick={() => setMixerActive(!mixerActive)}
               style={mixerActive ? { background: 'var(--text-color)' } : {}}
+              class="row"
             >
-              Mixer
-            </button>
+              <MdTune />
+            </CustomButton>
           </div>
         </Header>
         <Content>
           <article className="editor panel">
             <header className="flex row flex-end">
-              <button onClick={() => {
-                if (scale - 1 >= 0) {
-                  setScale(scale - 1);
-                }
-              }}>+</button>
-              <button onClick={() => {
-                if (scale + 1 < scaleFactors.length) {
-                  setScale(scale + 1);
-                }
-              }}>-</button>
-              <button
+              <CustomButton
+                onClick={() => {
+                  if (scale - 1 >= 0) {
+                    setScale(scale - 1);
+                  }
+                }}
+                class="row"
+                size="2em"
+              >
+                <MdZoomIn />
+              </CustomButton>
+              <CustomButton
+                onClick={() => {
+                  if (scale + 1 < scaleFactors.length) {
+                    setScale(scale + 1);
+                  }
+                }}
+                class="row"
+                size="2em"
+              >
+                <MdZoomOut />
+              </CustomButton>
+              <CustomButton
                 onClick={() => {
                   ipcRenderer.send('prompt-choose-file')
                 }}
-              >Add</button>
+                class="row"
+                size="2em"
+              >
+                <MdAdd />
+              </CustomButton>
             </header>
             <main
               className="cueTimeline"
@@ -174,23 +224,41 @@ const CueEditor = (props: any) => {
               :
               <></>
           }
-
         </Content>
       </Application>
       <Overlay
         active={editingDesecription ? true : false}
       >
-        <button onClick={() => setEditingDescription(false)}>X</button>
-        <label htmlFor="description">Description</label>
-        <textarea name="description" value={description} cols={75} rows={10} onChange={(ev) => {
-          setDescription(ev.target.value); console.log(description);
-        }} />
-        <button onClick={() => {
-          cue.setDescription(description);
-          console.log(description);
-          db.save();
-          setEditingDescription(false);
-        }}>Set Description</button>
+        <div className="wrapper flex col description">
+          <CustomButton
+            onClick={() => setEditingDescription(false)}
+          >
+            <MdClear />
+          </CustomButton>
+          <label
+            htmlFor="description"
+            style={{ marginTop: "0.5em", marginBottom: "0.5em" }}
+          >Description</label>
+          <textarea
+            name="description"
+            value={description}
+            cols={75}
+            rows={10}
+            onChange={(ev) => {
+              setDescription(ev.target.value); console.log(description);
+            }} />
+          <CustomButton
+            onClick={() => {
+              cue.setDescription(description);
+              console.log(description);
+              db.save();
+              setEditingDescription(false);
+            }}
+            class="text mx-auto"
+          >
+            Set Description
+          </CustomButton>
+        </div>
       </Overlay>
     </>
   )

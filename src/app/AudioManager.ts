@@ -60,6 +60,10 @@ class CuePlayer {
         this.currentlyPlaying = false;
         this.IDs = new Set();
         this.overalVolume = 1;
+
+        document.addEventListener(`finished-layer-${this.id}`, () => {
+            if(this.checkStatus() === false) document.dispatchEvent(new CustomEvent(`finishedPlaying-${this.id}`))
+        })
     }
 
     prepareCue() {
@@ -68,7 +72,7 @@ class CuePlayer {
             this.files.push({
                 id: id,
                 layer: x,
-                player: new FilePlayer(x)
+                player: new FilePlayer(x, this.id)
             })
         })
     }
@@ -102,6 +106,15 @@ class CuePlayer {
         })
     }
 
+    checkStatus() {
+        let status: boolean;
+        this.files.forEach(x => {
+            status = x.player.playing;
+        })
+
+        return status
+    }
+
 
     generateID(): number {
         let unique = Math.floor(Math.random() * 1000);
@@ -120,11 +133,18 @@ class FilePlayer {
     context: AudioContext
     buffer: AudioBufferSourceNode
     gainNode: GainNode
+    playing: boolean
+    id: number
 
-    constructor(layer: Layer) {
-        this.layer = layer
-        this.filePath = layer.filePath
+    constructor(layer: Layer, id: number) {
+        this.id = id;
+        this.layer = layer;
+        this.filePath = layer.filePath;
         this.context = new AudioContext();
+        this.playing = false;
+
+        console.log(this.id);
+
     }
 
     init(buffer: AudioBuffer) {
@@ -154,6 +174,10 @@ class FilePlayer {
                 this.context.decodeAudioData(this.toArrayBuffer(data), (buffer) => {
                     this.init(buffer)
                     this.buffer.start(this.context.currentTime + (this.layer.start / 1000));
+                    this.playing = true;
+                    this.buffer.onended = this.onEnded.bind(this)
+                    console.log(this.playing);
+
 
                     if (this.layer.fadeIN_Active === true) {
                         setTimeout(() => {
@@ -171,7 +195,6 @@ class FilePlayer {
                 })
             })
         })
-
     }
 
     pause() {
@@ -179,7 +202,7 @@ class FilePlayer {
     }
 
     fade(direction: FadeDirection, length: number, to?: number) {
-        if(direction === 'out'){
+        if (direction === 'out') {
             return new Promise<void>((resolve, reject) => {
                 this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.context.currentTime)
                 this.gainNode.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + length)
@@ -196,7 +219,13 @@ class FilePlayer {
 
     stop() {
         this.buffer.stop();
+        this.playing = false;
         console.log('Stopped.');
+    }
+
+    onEnded() {
+        //as of now only works in Cue Editor
+        document.dispatchEvent(new CustomEvent(`finished-layer-${this.id}`))
     }
 
     toArrayBuffer(buffer: any) {

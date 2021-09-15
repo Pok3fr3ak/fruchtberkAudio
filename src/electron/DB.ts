@@ -176,7 +176,6 @@ class DB {
     }
 
     parseDB(): DATA {
-        console.time()
         let checkProject = new Project('test');
         let checkCue = new Cue('test');
         let checkLayer = new Layer('test');

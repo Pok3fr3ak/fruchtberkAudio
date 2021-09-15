@@ -1,7 +1,8 @@
 import { Cue, db, Project } from "../electron/DB";
 import React, { useContext, useEffect, useState } from "react"
 import { audioManager } from "./AudioManager";
-import { Application, BackButton, Content, CueCard, Header, MenuColumn, Overlay, ToolColumn } from './components';
+import { Application, BackButton, Content, CueCard, CustomButton, Header, MenuColumn, Overlay, ToolColumn } from './components';
+import { MdAdd, MdMenu, MdArrowForward, MdArrowBack, MdPause, MdPlayArrow, MdSave } from "react-icons/md";
 
 interface TriggerInfo {
     trigger: boolean
@@ -48,18 +49,38 @@ export const Player = (props: any) => {
         <>
             <MenuColumn>
                 <BackButton link="/player" />
+                <CustomButton
+                    iconColor="white"
+                    size="2.5em"
+                >
+                    <MdMenu />
+                </CustomButton>
             </MenuColumn>
             <SelectionContext.Provider value={selectionValue}>
                 <Application>
                     <Header>
                         <h1>David Guetta: {project.name}</h1>
-                        <div>
-                            <button
+                        <div style={{ display: "flex" }}>
+                            <CustomButton
                                 onClick={() => {
                                     setPlaying(!playing);
                                 }}
-                            >{playing ? 'Pause' : 'Play'}</button>
-                            <button>Save</button>
+                                class="row"
+                                iconColor="white"
+                                size="2.5em"
+                            >
+                                {
+                                    playing ?
+                                        <MdPause />
+                                        :
+                                        <MdPlayArrow />}
+                            </CustomButton>
+                            <CustomButton
+                                iconColor="white"
+                                size="2.5em"
+                                class="row">
+                                <MdSave />
+                            </CustomButton>
                         </div>
                     </Header>
                     <Content>
@@ -76,7 +97,14 @@ export const Player = (props: any) => {
                                     )
                                 })
                             }
-                            <button id="addLayer" onClick={() => setNumberOfPairs(numberOfPairs + 1)}>ADD LAYER</button>
+                            <CustomButton
+                                onClick={() => setNumberOfPairs(numberOfPairs + 1)}
+                                iconColor="white"
+                                size="2.5em"
+                                class="row mx-auto"
+                            >
+                                <MdAdd />
+                            </CustomButton>
                         </div>
                     </Content>
                 </Application>
@@ -162,6 +190,7 @@ const Group = (props: GroupProps) => {
                     return (
                         <>
                             <Node
+                                key={`node-key-${props.index * 30 + i}`}
                                 index={props.index * 30 + i}
                                 localIndex={i}
                                 currPlaying={currPlaying}
@@ -171,6 +200,7 @@ const Group = (props: GroupProps) => {
                             {
                                 i < arr.length - 1 ?
                                     <Switcher
+                                        key={`switcher-key-${i}`}
                                         index={i}
                                         active={currPlaying === null ? true : false}
                                         direction={typeof triggerSwitch.toPlay === 'number' && triggerSwitch.toPlay > i ? 'left' : 'right'}
@@ -184,7 +214,14 @@ const Group = (props: GroupProps) => {
                     )
                 })
             }
-            <button onClick={() => setNumberOfNodes(numberOfNodes + 1)}>+</button>
+            <CustomButton
+                onClick={() => setNumberOfNodes(numberOfNodes + 1)}
+                iconColor="white"
+                size="2.5em"
+                class="row"
+            >
+                <MdAdd />
+            </CustomButton>
         </div>
     )
 }
@@ -243,8 +280,8 @@ const Node = (props: NodeProps) => {
     useEffect(() => {
         let timer: any;
         console.log(`Playing something new: ${props.currPlaying}`);
-        if (props.currPlaying === props.localIndex){
-            timer = window.setInterval(()=> {
+        if (props.currPlaying === props.localIndex) {
+            timer = window.setInterval(() => {
                 setTime(time => time + 1)
             }, 1000)
         }
@@ -268,7 +305,15 @@ const Node = (props: NodeProps) => {
                     <h2>{cue.name}</h2>
                     <p className="description">{cue.description}</p>
                     <div className="footer">
-                        <p>Play/Pause</p>
+                        <CustomButton
+                            iconColor="white"
+                            size="2em"
+                            class="minor"
+                        >
+                            {
+                                props.currPlaying === props.localIndex ? <MdPause /> : <MdPlayArrow />
+                            }
+                        </CustomButton>
                         <div className="time">
                             <p>{props.currPlaying === props.localIndex ? time : cue.getLength()}</p>
                             <p className="indicator"> </p>
@@ -295,7 +340,7 @@ const Switcher = (props: SwitcherProps) => {
     const direction = props.direction;
 
     return (
-        <button
+        <CustomButton
             onClick={
                 () => props.setTriggerSwitch({
                     trigger: true,
@@ -303,7 +348,13 @@ const Switcher = (props: SwitcherProps) => {
                     lastPlaying: props.index
                 })}
             disabled={props.active}
-        >{direction}</button>
+            iconColor="white"
+            size="2.5em"
+        >
+            {
+                direction === 'right' ? <MdArrowForward /> : <MdArrowBack />}
+        </CustomButton>
+
     )
 }
 

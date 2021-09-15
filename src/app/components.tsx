@@ -1,12 +1,16 @@
 import { Cue } from "../electron/DB"
 import React from "react"
 import { Link } from "react-router-dom"
+import { IconContext } from "react-icons"
+import { MdArrowBack, MdDeleteForever } from "react-icons/md"
 
 const BackButton = (props: any) => {
     return (
         <div className="backButtonWrapper">
             <button className="backButton">
-                <Link to={props.link} className="backLink">Back</Link>
+                <Link to={props.link} className="backLink">
+                    <MdArrowBack size="2.5em" />
+                </Link>
             </button>
         </div>
 
@@ -43,9 +47,9 @@ const CueCard = (props: CueCardProps) => {
                     {cardContent()}
                 </Link>
                     :
-                <div className="no-link">
-                    {cardContent()}
-                </div>
+                    <div className="no-link">
+                        {cardContent()}
+                    </div>
             }
 
         </div>
@@ -108,4 +112,61 @@ const Overlay = (props: any) => {
     )
 }
 
-export { BackButton, CueCard, Header, MenuColumn, ToolColumn, Application, Content, Overlay }
+interface CustomButtonProps {
+    class?: string
+    iconColor?: string
+    size?: string
+    onClick?: (...args: any[]) => any
+    [key: string]: any
+}
+
+const CustomButton = (props: CustomButtonProps) => {
+    return (
+        <button
+            className={`button-wrapper ${props.class ? props.class : ''} custom-button`}
+            onClick={props.onClick}
+        >
+            <IconContext.Provider value={{ color: props.iconColor ? props.iconColor : 'white', size: props.size ? props.size : '2.5em' }}>
+                {props.children}
+            </IconContext.Provider>
+        </button>
+    )
+}
+
+interface DeleteButtonToggleProps {
+    deleteMode: boolean,
+    setDeleteMode: (arg: boolean) => void
+    [key: string]: any
+}
+
+const DeleteButtonToggle = (props: DeleteButtonToggleProps) => {
+    return (
+        <CustomButton
+            class="deleteMode"
+            iconColor={`${props.deleteMode === true ? 'red' : 'white'}`}
+            onClick={() => {
+                props.setDeleteMode(!props.deleteMode);
+            }}>
+            <MdDeleteForever />
+        </CustomButton>
+    )
+}
+
+interface DeleteButtonProps {
+    deleteFunction: (arg: any) => any
+    [key: string]: any
+}
+
+const DeleteButton = (props: DeleteButtonProps) => {
+    return (
+        <CustomButton
+            class="deleteMode"
+            iconColor="white"
+            onClick={props.deleteFunction}
+        >
+            <MdDeleteForever />
+        </CustomButton>
+    )
+}
+
+export { BackButton, CueCard, Header, MenuColumn, ToolColumn, Application, Content, Overlay, CustomButton, DeleteButtonToggle, DeleteButton }

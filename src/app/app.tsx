@@ -4,10 +4,11 @@ import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import './main.css';
 import { IpcRenderer } from 'electron';
 import { CueEditor } from './CueEditor';
-import { PropertiesWindow } from './PropertiesWindow';
 import { Player } from './Player';
 import { ProjectSelector } from './ProjectSelector';
-import { Application, BackButton, Content, CueCard, Header, MenuColumn, Overlay, ToolColumn } from './components';
+import { Application, BackButton, Content, CueCard, CustomButton, DeleteButton, DeleteButtonToggle, Header, MenuColumn, Overlay, ToolColumn } from './components';
+import { MdAdd, MdFileDownload, MdArrowBack, MdFileUpload, MdTune, MdMenu, MdDescription, MdDeleteForever, MdZoomIn, MdZoomOut, MdClear, MdStorage } from 'react-icons/md';
+import { FaSpotify } from 'react-icons/fa'
 
 declare global {
   interface Window {
@@ -62,6 +63,7 @@ const ProjectList = (props: any) => {
   const prjList = db.parseDB().projects;
   const [newPrjName, setNewPrjName] = useState('');
   const [addingProject, setAddingProject] = useState(false);
+  const [deleteMode, setDeleteMode] = useState(false);
 
   return (
     <>
@@ -78,15 +80,23 @@ const ProjectList = (props: any) => {
               prjList.map((x) => {
                 return (
                   <div
-                    className="projectCard"
+                    className="projectCard no-delete"
                     key={`prj_${Math.floor(Math.random() * 10000)}`}
                   >
                     <Link
                       to={`/project/${x.name}`}
                       className=""
                     >
-                      <h1>{x.name}</h1>
-                      <p>{x.cueList.length} Cues</p>
+                      <div>
+                        <h1>{x.name}</h1>
+                        <p>{x.cueList.length} Cues</p>
+                      </div>
+                      {
+                        deleteMode === true ?
+                          <DeleteButton
+                            deleteFunction={() => { }}
+                          /> : ''
+                      }
                     </Link>
                   </div>
                 )
@@ -96,26 +106,58 @@ const ProjectList = (props: any) => {
         </Content>
       </Application>
       <ToolColumn>
-        <div className="newProject">
-          <button onClick={() => { setAddingProject(true); }}>+</button>
-        </div>
-        <div className="saveDB">
-          <button onClick={()=>{
+        <CustomButton
+          class="newProject"
+          onClick={() => { setAddingProject(true); }}
+          iconColor="white"
+          size="2.5em"
+        >
+          <MdAdd />
+        </CustomButton>
+        <CustomButton
+          onClick={() => {
             let a = db.getData()
             ipcRenderer.send('exportDB', JSON.stringify(db.data, customStringify));
-          }}>DB exportieren</button>
-        </div>
+          }}
+          class="saveDB"
+          iconColor="white"
+          size="2.5em"
+        >
+          <MdFileDownload />
+        </CustomButton>
+        <DeleteButtonToggle
+          deleteMode={deleteMode}
+          setDeleteMode={setDeleteMode} />
+        <CustomButton
+          class="importDB"
+          iconColor="white"
+          size="2.5em">
+          <MdFileUpload />
+        </CustomButton>
+
       </ToolColumn>
       <Overlay
         active={addingProject ? true : false}
       >
-        <div className="wrapper">
-          <button onClick={() => setAddingProject(false)}>X</button>
-          <input type="text" onChange={(ev) => { setNewPrjName(ev.target.value) }} />
-          <button onClick={() => {
-            db.addProject(newPrjName);
-            window.location.reload();
-          }}>Add Project</button>
+        <div className="wrapper addProject">
+          <CustomButton
+            onClick={() => setAddingProject(false)}
+            iconColor="white"
+            size="2.5em"
+          >
+            <MdClear />
+          </CustomButton>
+          <label htmlFor="prjName">Projekt Name:</label>
+          <input name="prjName" type="text" onChange={(ev) => { setNewPrjName(ev.target.value) }} />
+          <CustomButton
+            onClick={() => {
+              db.addProject(newPrjName);
+              window.location.reload();
+            }}
+            class="text mx-auto"
+          >
+            Add Project
+          </CustomButton>
         </div>
       </Overlay>
     </>
@@ -126,6 +168,8 @@ const ProjectOverview = (props: any) => {
 
   const [newCueName, setNewCueName] = useState('');
   const [addingCue, setAddingCue] = useState(false);
+  const [addSpotify, setAddSpotify] = useState<boolean | null>(null);
+  const [deleteMode, setDeleteMode] = useState(false);
 
   return (
     <>
@@ -143,6 +187,7 @@ const ProjectOverview = (props: any) => {
 
                 return (
                   <CueCard
+                    key={`cue-Card-${cue.id}`}
                     cue={cue}
                     link
                     linkto={`/project/${props.match.params.project}/cue/${cue.name}`} />
@@ -153,24 +198,101 @@ const ProjectOverview = (props: any) => {
         </Content>
       </Application>
       <ToolColumn>
-        <div className="newCue">
-          <button onClick={() => {
+        <CustomButton
+          class="newCue"
+          onClick={() => {
             setAddingCue(true);
-          }}>+</button>
-        </div>
+          }}
+        >
+          <MdAdd></MdAdd>
+        </CustomButton>
+        <DeleteButtonToggle
+          deleteMode={deleteMode}
+          setDeleteMode={setDeleteMode}
+        />
       </ToolColumn>
       <Overlay
         active={addingCue ? true : false}
       >
-        <button onClick={() => {
-          setAddingCue(false);
-        }}>X</button>
-        <input type="text" onChange={(ev) => { setNewCueName(ev.target.value) }} />
-        <button onClick={() => {
-          db.getProject(props.match.params.project).addCue(new Cue(newCueName));
-          db.save();
-          window.location.reload();
-        }}>Add Cue</button>
+        <div className="wrapper addCue">
+          <div className="flex row">
+            <CustomButton
+              onClick={() => {
+                setAddingCue(false);
+                setAddSpotify(null);
+              }}
+              class="row"
+            >
+              <MdClear />
+            </CustomButton>
+            {
+              addSpotify !== null ?
+                <CustomButton
+                  onClick={() => {
+                    setAddSpotify(null)
+                  }}
+                  class="row"
+                >
+                  <MdArrowBack />
+                </CustomButton>
+                :
+                <>
+                </>
+            }
+          </div>
+          {
+            addSpotify === null ?
+              <>
+                <div className="typeDesicion flex row">
+                  <div onClick={() => {
+                    setAddSpotify(false)
+                  }}>
+                    <figure>
+                      <MdStorage />
+                    </figure>
+                    <p>Ganz klassischer Layer</p>
+                  </div>
+                  <div onClick={() => {
+                    setAddSpotify(true)
+                  }}>
+                    <figure>
+                      <FaSpotify />
+                    </figure>
+                    <p>Spotify Layer</p>
+                  </div>
+                </div>
+              </>
+              :
+              <>
+              </>
+          }
+          {
+            addSpotify === true ?
+              <>
+                <h1 style={{ color: "#fff" }}>In Arbeit...</h1>
+              </>
+              :
+              <>
+              </>
+          }
+          {
+            addSpotify === false ?
+              <>
+                <label htmlFor="cueName">Cue Name:</label>
+                <input name="cueName" type="text" onChange={(ev) => { setNewCueName(ev.target.value) }} />
+                <CustomButton
+                  onClick={() => {
+                    db.getProject(props.match.params.project).addCue(new Cue(newCueName));
+                    db.save();
+                    window.location.reload();
+                  }}
+                  class="text mx-auto"
+                >Add Cue</CustomButton>
+              </>
+              :
+              <></>
+          }
+        </div>
       </Overlay>
     </>
   )
