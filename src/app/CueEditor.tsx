@@ -77,7 +77,10 @@ const CueEditor = (props: any) => {
   return (
     <>
       <MenuColumn>
-        <BackButton link={`/project/${params.project}`} />
+        <BackButton
+          link={`/project/${params.project}`}
+          additional={() => audioManager.stopCue(cue.id)}
+        />
       </MenuColumn>
       <Application>
         <Header>

@@ -4,10 +4,21 @@ import { Link } from "react-router-dom"
 import { IconContext } from "react-icons"
 import { MdArrowBack, MdDeleteForever } from "react-icons/md"
 
-const BackButton = (props: any) => {
+interface BackButtonProps{
+    link: string,
+    additional?: (...args: any[]) => any
+    [key: string]: any
+}
+
+const BackButton = (props: BackButtonProps) => {
     return (
         <div className="backButtonWrapper">
-            <button className="backButton">
+            <button
+                className="backButton"
+                onClick={()=>{
+                    if(props.additional) props.additional();
+                }}
+            >
                 <Link to={props.link} className="backLink">
                     <MdArrowBack size="2.5em" />
                 </Link>

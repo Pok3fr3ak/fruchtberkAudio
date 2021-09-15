@@ -2,7 +2,7 @@ import { Cue, db, Project } from "../electron/DB";
 import React, { useContext, useEffect, useState } from "react"
 import { audioManager } from "./AudioManager";
 import { Application, BackButton, Content, CueCard, CustomButton, Header, MenuColumn, Overlay, ToolColumn } from './components';
-import { MdAdd, MdMenu, MdArrowForward, MdArrowBack, MdPause, MdPlayArrow, MdSave } from "react-icons/md";
+import { MdAdd, MdMenu, MdArrowForward, MdArrowBack, MdPause, MdPlayArrow, MdSave, MdClear } from "react-icons/md";
 
 interface TriggerInfo {
     trigger: boolean
@@ -64,6 +64,11 @@ export const Player = (props: any) => {
                             <CustomButton
                                 onClick={() => {
                                     setPlaying(!playing);
+                                    if(playing === true){
+                                        audioManager.stopAll();
+                                        console.log('Stopped all');
+                                        
+                                    }
                                 }}
                                 class="row"
                                 iconColor="white"
@@ -194,6 +199,7 @@ const Group = (props: GroupProps) => {
                                 index={props.index * 30 + i}
                                 localIndex={i}
                                 currPlaying={currPlaying}
+                                setCurrPlaying={setCurrPlaying}
                                 selectedCues={selectedCues}
                                 setSelectedCues={setSelectedCues}
                             />
@@ -230,6 +236,7 @@ interface NodeProps {
     index: number,
     localIndex: number,
     currPlaying: number | null,
+    setCurrPlaying: (arg: number | null) => void
     selectedCues: Array<SelectedCues | null>,
     setSelectedCues: (selCue: Array<SelectedCues | null>) => void
 }
@@ -278,7 +285,7 @@ const Node = (props: NodeProps) => {
     }, [currCue])
 
     useEffect(() => {
-        let timer: any;
+        let timer: number;
         console.log(`Playing something new: ${props.currPlaying}`);
         if (props.currPlaying === props.localIndex) {
             timer = window.setInterval(() => {
@@ -292,36 +299,63 @@ const Node = (props: NodeProps) => {
     return (
         <div
             className={`${active ? 'active' : 'idle'} node ${props.currPlaying === props.localIndex ? 'playing' : ''}`}
-            onClick={() => {
-                /* selector(lID) */
-                setSelected(props.index);
-                setActive(!active);
-                if (selectionActive === false && active === false) {
-                    setSelectionActive(true)
-                }
-            }}>
+        >
             {
-                cue ? <>
-                    <h2>{cue.name}</h2>
-                    <p className="description">{cue.description}</p>
-                    <div className="footer">
-                        <CustomButton
-                            iconColor="white"
-                            size="2em"
-                            class="minor"
-                        >
-                            {
-                                props.currPlaying === props.localIndex ? <MdPause /> : <MdPlayArrow />
-                            }
-                        </CustomButton>
-                        <div className="time">
-                            <p>{props.currPlaying === props.localIndex ? time : cue.getLength()}</p>
-                            <p className="indicator"> </p>
+                cue ?
+                    <>
+                        <div className="flex row space-between header">
+                            <h2>{cue.name}</h2>
+
+                            <CustomButton
+                                class="clearCue row"
+                                size="2em"
+                            >
+                                <MdClear />
+                            </CustomButton>
                         </div>
-                    </div>
-                </>
+
+                        <p className="description">{cue.description}</p>
+
+                        <div className="footer">
+                            <CustomButton
+                                iconColor="white"
+                                size="2em"
+                                class="minor"
+                                onClick={() => {
+                                    if(props.currPlaying === props.localIndex){
+                                        audioManager.stopCue(selectedCues[props.localIndex].id)
+                                        props.setCurrPlaying(null)
+                                    } else {
+                                        props.setCurrPlaying(props.localIndex)
+                                    }
+
+                                }}
+                            >
+                                {
+                                    props.currPlaying === props.localIndex ? <MdPause /> : <MdPlayArrow />
+                                }
+                            </CustomButton>
+                            <div className="time">
+                                <p>{props.currPlaying === props.localIndex ? time : cue.getLength()}</p>
+                                <p className="indicator"> </p>
+                            </div>
+                        </div>
+                    </>
                     :
-                    <></>
+                    <div style={{ flex: "1", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                        <p
+                            style={{ flex: "1", textAlign: "center" }}
+                            onClick={() => {
+                                /* selector(lID) */
+                                setSelected(props.index);
+                                setActive(!active);
+                                if (selectionActive === false && active === false) {
+                                    setSelectionActive(true)
+                                }
+                            }}>
+                            Select a Cue
+                        </p>
+                    </div>
             }
         </div>
     )

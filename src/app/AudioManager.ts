@@ -36,6 +36,12 @@ class AudioManager {
         this.cues[this.findCue(id)].stopCue();
     }
 
+    stopAll(){
+        this.cues.forEach(x => {
+            x.stopCue();
+        })
+    }
+
     findCue(id: number): number {
         return this.cues.findIndex(x => {
             return x.id == id;
@@ -142,9 +148,6 @@ class FilePlayer {
         this.filePath = layer.filePath;
         this.context = new AudioContext();
         this.playing = false;
-
-        console.log(this.id);
-
     }
 
     init(buffer: AudioBuffer) {
@@ -176,8 +179,6 @@ class FilePlayer {
                     this.buffer.start(this.context.currentTime + (this.layer.start / 1000));
                     this.playing = true;
                     this.buffer.onended = this.onEnded.bind(this)
-                    console.log(this.playing);
-
 
                     if (this.layer.fadeIN_Active === true) {
                         setTimeout(() => {

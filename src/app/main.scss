@@ -283,6 +283,8 @@ label[for="description"] {
     }
 }
 
+
+
 .importDB{
     margin-top: auto!important;
 }
@@ -739,10 +741,25 @@ label[for="description"] {
     flex-direction: column;
     justify-content: space-between;
 
+    .header{
+        margin-bottom: 0.5em;
+
+        .clearCue{
+            opacity: 0.0;
+            transition: opacity 0.15s ease-in-out;
+        }
+
+        &:hover{
+            .clearCue{
+                opacity: 1;
+            }
+        }
+    }
+
     h2{
         margin-top: 0;
         color: var(--text-color);
-        margin-bottom: 0.5em;
+        margin-bottom: 0;
     }
 
     p{

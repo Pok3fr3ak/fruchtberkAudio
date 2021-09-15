@@ -674,10 +674,20 @@ label[for=description] {
   flex-direction: column;
   justify-content: space-between;
 }
+.node .header {
+  margin-bottom: 0.5em;
+}
+.node .header .clearCue {
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+}
+.node .header:hover .clearCue {
+  opacity: 1;
+}
 .node h2 {
   margin-top: 0;
   color: var(--text-color);
-  margin-bottom: 0.5em;
+  margin-bottom: 0;
 }
 .node p {
   margin: 0;
