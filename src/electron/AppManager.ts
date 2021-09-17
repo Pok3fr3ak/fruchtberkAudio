@@ -18,8 +18,6 @@ class AppManager {
     }
 
     deleteWindow(name: string): void {
-        console.log('called');
-
         this.windowManager.delete(name)
     }
 

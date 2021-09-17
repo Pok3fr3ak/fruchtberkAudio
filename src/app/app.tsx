@@ -9,6 +9,7 @@ import { ProjectSelector } from './ProjectSelector';
 import { Application, BackButton, Content, CueCard, CustomButton, DeleteButton, DeleteButtonToggle, Header, MenuColumn, Overlay, ToolColumn } from './components';
 import { MdAdd, MdFileDownload, MdArrowBack, MdFileUpload, MdTune, MdMenu, MdDescription, MdDeleteForever, MdZoomIn, MdZoomOut, MdClear, MdStorage } from 'react-icons/md';
 import { FaSpotify } from 'react-icons/fa'
+import { SpotifyCueEditor } from './SpotifyCueEditor';
 
 declare global {
   interface Window {
@@ -28,6 +29,7 @@ const App = () => {
         <Route exact path="/projectList" component={ProjectList} />
         <Route exact path="/project/:project" component={ProjectOverview} />
         <Route exact path="/project/:project/cue/:cue" component={CueEditor} />
+        <Route exact path="/project/:project/spotifyCue" component={SpotifyCueEditor} />
         <Route exact path="/player" component={ProjectSelector} />
         <Route exact path="/player/:project" component={Player} />
       </Switch>
@@ -104,6 +106,7 @@ const ProjectList = (props: any) => {
             }
           </div>
         </Content>
+
       </Application>
       <ToolColumn>
         <CustomButton
@@ -194,6 +197,7 @@ const ProjectOverview = (props: any) => {
                 )
               })
             }
+            <Link to={`/project/${props.match.params.project}/spotifyCue`}>SPOTIFY TEST</Link>
           </div>
         </Content>
       </Application>

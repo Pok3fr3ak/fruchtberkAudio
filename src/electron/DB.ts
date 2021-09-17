@@ -5,11 +5,6 @@ export interface DATA {
     [key: string]: any;
 }
 
-export interface Phase {
-    cueNumber: number;
-    pan: number;
-}
-
 export class Layer {
     filePath: string;
     name: string;
@@ -66,6 +61,14 @@ export class Layer {
 
 }
 
+export class SpotifyCue{
+
+
+    constructor(){
+
+    }
+}
+
 export class Cue {
     id: number;
     name: string;
@@ -73,7 +76,6 @@ export class Cue {
     changed: number;
     zoomScale: number;
     files: Array<Layer>;
-    phases: Array<Phase>;
 
     constructor(name: string) {
         this.name = name;
@@ -81,7 +83,6 @@ export class Cue {
         this.changed = Date.now();
         this.zoomScale = 5;
         this.files = [];
-        this.phases = [];
         this.id = db !== undefined ? db.generateID() : 0;
 
         //Methods
@@ -142,20 +143,25 @@ export class Cue {
 export class Project {
     name: string;
     cueList: Array<Cue>;
+    spotifyCues: Array<SpotifyCue>
 
     constructor(name: string) {
         this.name = name;
         this.cueList = [];
+        this.spotifyCues = [];
 
         //Methods
         this.addCue = this.addCue;
+        this.addSpotifyCue = this.addSpotifyCue;
     }
 
     addCue(cue: Cue) {
         this.cueList.push(cue);
     }
 
-
+    addSpotifyCue(spotifyCue: SpotifyCue){
+        this.spotifyCues.push(spotifyCue)
+    }
 }
 
 class DB {
