@@ -93,3 +93,4 @@ doc/
 
 # VS-Code settings
 .vscode/
+.vscode/settings.json

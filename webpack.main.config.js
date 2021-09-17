@@ -21,8 +21,6 @@ module.exports = {
             {
               from: path.resolve(__dirname, 'src', 'assets'),
               to: path.resolve(__dirname, '.webpack/renderer', 'assets')
-/*               from: 'src/assets',
-              to: 'assets' */
             }
         ],
 
