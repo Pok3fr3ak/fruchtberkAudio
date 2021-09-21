@@ -62,10 +62,30 @@ export class Layer {
 }
 
 export class SpotifyCue{
+    name: string;
+    playlists: Array<{
+        name: string,
+        uri: string
+    }>
+    songs: Array<string>
+    id: number;
 
+    constructor(name: string){
+        this.name = name;
+        this.id = db !== undefined ? db.generateID() : 0;
+        this.playlists = [];
+        this.songs = [];
+    }
 
-    constructor(){
+    addPlaylist(name: string, spotifyURI: string){
+        this.playlists.push({
+            name: name,
+            uri: spotifyURI
+        })
+    }
 
+    addSong(spotifyURI: string){
+        this.songs.push(spotifyURI)
     }
 }
 
@@ -76,6 +96,7 @@ export class Cue {
     changed: number;
     zoomScale: number;
     files: Array<Layer>;
+
 
     constructor(name: string) {
         this.name = name;
@@ -94,6 +115,7 @@ export class Cue {
         this.getZoomScale = this.getZoomScale;
         this.setZoomScale = this.setZoomScale;
         this.setDescription = this.setDescription;
+
     }
 
     addFile(newLayer: Layer): void {
@@ -143,24 +165,25 @@ export class Cue {
 export class Project {
     name: string;
     cueList: Array<Cue>;
-    spotifyCues: Array<SpotifyCue>
+    spotifyLayers: Array<SpotifyCue>
+
 
     constructor(name: string) {
         this.name = name;
         this.cueList = [];
-        this.spotifyCues = [];
+        this.spotifyLayers = [];
 
         //Methods
         this.addCue = this.addCue;
         this.addSpotifyCue = this.addSpotifyCue;
     }
 
-    addCue(cue: Cue) {
-        this.cueList.push(cue);
+    addSpotifyCue(newSpotifyCue: SpotifyCue): void{
+        this.spotifyLayers.push(newSpotifyCue)
     }
 
-    addSpotifyCue(spotifyCue: SpotifyCue){
-        this.spotifyCues.push(spotifyCue)
+    addCue(cue: Cue) {
+        this.cueList.push(cue);
     }
 }
 
@@ -185,6 +208,7 @@ class DB {
         let checkProject = new Project('test');
         let checkCue = new Cue('test');
         let checkLayer = new Layer('test');
+        let checkSpotifyLayer = new Layer('test')
 
         let retrievedData: DATA = JSON.parse(localStorage.getItem('db') || this.default, customParse);
         retrievedData.projects = retrievedData.projects.map((x) => {
@@ -194,6 +218,10 @@ class DB {
                 })
                 return this.checkContent(x, checkCue, 'cue')
             })
+            //Wirft aus irgendeinem Grund einen Error, cant read .map of undefined
+/*             x.spotifyLayers.map(x => {
+                return this.checkContent(x, checkSpotifyLayer, 'spotifyLayer');
+            }) */
             return this.checkContent(x, checkProject, 'project')
         })
         return retrievedData
@@ -250,6 +278,20 @@ class DB {
             return layer;
         } else {
             throw ('Layer could not be found or does not exist');
+        }
+    }
+
+    getSpotifyCue(project: string, id: number): SpotifyCue{
+        const cueName = this.getProject(project)
+
+        if(!cueName) throw ('Spotify Layer could not be found, because Cue could not be found or does not exist');
+
+        const spotifyLayer = cueName.spotifyLayers.find(x => x.id === id)
+
+        if(spotifyLayer){
+            return spotifyLayer
+        } else {
+            throw ('Spotify Layer could not be found or does not exist')
         }
     }
 

@@ -114,15 +114,28 @@ app.on('ready', () => {
   })
 
   io.on('connection', (socket) => {
-
-    fetch('http:localhost:5000/auth/token').then(res => res.json()).then(token => {
-      console.log(token);
-      socket.emit('initalToken', { token })
-    });
-
     console.log('\n---SOCKET CONNECTED---\n');
+
+    requestToken().then((token) => {
+      socket.emit('initalToken', token)
+    })
+
+    io.on('requestToken', (socket) => {
+      requestToken().then((token) => {
+        socket.emit('recievedToken', token)
+      })
+    })
   })
 });
+
+const requestToken = () => {
+  return new Promise<string>((resolve, reject) => {
+    fetch('http://localhost:5000/auth/token').then(res => res.json()).then((token: any) => {
+      resolve(token.access_token)
+    });
+  })
+
+}
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

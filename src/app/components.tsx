@@ -1,10 +1,10 @@
-import { Cue } from "../electron/DB"
+import { Cue, SpotifyCue } from "../electron/DB"
 import React from "react"
 import { Link } from "react-router-dom"
 import { IconContext } from "react-icons"
 import { MdArrowBack, MdDeleteForever } from "react-icons/md"
 
-interface BackButtonProps{
+interface BackButtonProps {
     link: string,
     additional?: (...args: any[]) => any
     [key: string]: any
@@ -15,8 +15,8 @@ const BackButton = (props: BackButtonProps) => {
         <div className="backButtonWrapper">
             <button
                 className="backButton"
-                onClick={()=>{
-                    if(props.additional) props.additional();
+                onClick={() => {
+                    if (props.additional) props.additional();
                 }}
             >
                 <Link to={props.link} className="backLink">
@@ -29,23 +29,38 @@ const BackButton = (props: BackButtonProps) => {
 }
 
 interface CueCardProps {
-    cue: Cue,
+    cue?: Cue,
+    spotifyCue?: SpotifyCue
     optionalClass?: string
     link?: boolean
     linkto?: string,
 }
 
 const CueCard = (props: CueCardProps) => {
-    const date = new Date(props.cue.changed)
 
     const cardContent = () => {
-        return (
-            <>
-                <h2>{props.cue.name}</h2>
-                <p className="cueDescription">{props.cue.description}</p>
-                <p className="info">{`Last Changed: ${date.toLocaleDateString('de-DE')}, ${date.toLocaleTimeString('de-DE')}`}</p>
-            </>
-        )
+
+        if (props.cue !== undefined) {
+
+            const date = new Date(props.cue.changed)
+            return (
+                <>
+                    <h2>{props.cue.name}</h2>
+                    <p className="cueDescription">{props.cue.description}</p>
+                    <p className="info">{`Last Changed: ${date.toLocaleDateString('de-DE')}, ${date.toLocaleTimeString('de-DE')}`}</p>
+                </>
+            )
+        }
+
+        if (props.spotifyCue !== undefined) {
+            return (
+                <>
+                    <h2>{props.spotifyCue.name}</h2>
+                    <p className="info">{/* `Last Changed: ${date.toLocaleDateString('de-DE')}, ${date.toLocaleTimeString('de-DE')}` */}</p>
+                </>
+            )
+        }
+
     }
 
     return (

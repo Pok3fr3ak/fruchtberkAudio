@@ -1,4 +1,4 @@
-import { Cue, customStringify, db } from '../electron/DB';
+import { Cue, customStringify, db, SpotifyCue } from '../electron/DB';
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import './main.css';
@@ -29,7 +29,7 @@ const App = () => {
         <Route exact path="/projectList" component={ProjectList} />
         <Route exact path="/project/:project" component={ProjectOverview} />
         <Route exact path="/project/:project/cue/:cue" component={CueEditor} />
-        <Route exact path="/project/:project/spotifyCue" component={SpotifyCueEditor} />
+        <Route exact path="/project/:project/spotifyCue/:spotifyCue" component={SpotifyCueEditor} />
         <Route exact path="/player" component={ProjectSelector} />
         <Route exact path="/player/:project" component={Player} />
       </Switch>
@@ -197,6 +197,21 @@ const ProjectOverview = (props: any) => {
                 )
               })
             }
+            {
+              db.getProject(props.match.params.project).spotifyLayers.map(spotifyCue => {
+                console.log(props.match.params.project, spotifyCue);
+                
+                return (
+                  <CueCard
+                    key={`cue-Card-${spotifyCue.id}`}
+                    spotifyCue={spotifyCue}
+                    link
+                    linkto={`/project/${props.match.params.project}/spotifyCue/${spotifyCue.id}`}
+                  />
+
+                )
+              })
+            }
             <Link to={`/project/${props.match.params.project}/spotifyCue`}>SPOTIFY TEST</Link>
           </div>
         </Content>
@@ -273,7 +288,18 @@ const ProjectOverview = (props: any) => {
           {
             addSpotify === true ?
               <>
-                <h1 style={{ color: "#fff" }}>In Arbeit...</h1>
+                <label htmlFor="spotifyCueName">Spotify Cue Name: </label>
+                <input name="cueName" type="text" value={newCueName} onChange={(ev) => { setNewCueName(ev.target.value) }} />
+                <CustomButton
+                  onClick={() => {
+                    db.getProject(props.match.params.project).addSpotifyCue(new SpotifyCue(newCueName))
+                    db.save();
+                    window.location.reload();
+                  }}
+                  class="text mx-auto"
+                >
+                  Add Spotify Cue
+                </CustomButton>
               </>
               :
               <>
