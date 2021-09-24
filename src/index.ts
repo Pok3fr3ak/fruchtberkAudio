@@ -113,7 +113,7 @@ app.on('ready', () => {
 
   })
 
-  ipcMain.on('AddedSpotifyPlayer', (ev, data)=>{
+  ipcMain.on('playSpotifyCue', (ev, data)=>{
     connectedSocket.emit('play', data)
   })
 

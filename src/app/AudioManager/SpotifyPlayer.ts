@@ -12,7 +12,7 @@ class SpotifyPlayer {
     }
 
     playCue() {
-        document.dispatchEvent(new CustomEvent('AddedSpotifyPlayer', {
+        document.dispatchEvent(new CustomEvent('playSpotifyCue', {
             detail: {
                 uri: this.spotifyCue.playlist.uri
             }

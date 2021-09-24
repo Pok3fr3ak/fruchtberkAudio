@@ -42,16 +42,16 @@ export const Player = (props: any) => {
 
         if (props.currPlaying === props.localIndex) {
             console.log('CALLING TO PLAY');
-            ipcRenderer.send('AddedSpotifyPlayer', e.detail.uri)
+            ipcRenderer.send('playSpotifyCue', e.detail.uri)
         }
 
     }
 
     useEffect(() => {
-        document.addEventListener('AddedSpotifyPlayer', SpotifyCuePlayCall)
+        document.addEventListener('playSpotifyCue', SpotifyCuePlayCall)
 
         return () => {
-            document.removeEventListener('AddedSpotifyPlayer', SpotifyCuePlayCall)
+            document.removeEventListener('playSpotifyCue', SpotifyCuePlayCall)
         }
     }, [])
 
