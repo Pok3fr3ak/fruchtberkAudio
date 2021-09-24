@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Project } from "../../electron/DB";
 import { CueCard } from "../components";
-import { SelectionContext } from "../Player";
+import { SelectionContext } from "./Player";
 
 const Selector = (props: any) => {
 

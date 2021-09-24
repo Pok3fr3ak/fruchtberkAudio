@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { SpotifyLogin } from "./SpotifyLogin";
 import { SpotifyEditor } from "./SpotifyEditor";
-import { Application, BackButton, Content, Header, MenuColumn, Overlay } from "./components";
-import { db } from "../electron/DB";
+import { Application, BackButton, Content, Header, MenuColumn, Overlay } from "../components";
+import { db } from "../../electron/DB";
 
 const SpotifyCueEditor = (props: any) => {
 

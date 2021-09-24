@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { MdAdd, MdClear } from "react-icons/md";
-import { db, SpotifyCue } from "../electron/DB";
-import { CustomButton } from "./components";
-import { SpotifyPlaybackProps, SpotifyData, PlaylistData } from "./customInterfaces";
+import { db, SpotifyCue } from "../../electron/DB";
+import { CustomButton } from "../components";
+import { SpotifyPlaybackProps, SpotifyData, PlaylistData } from "../customInterfaces";
 
 const SpotifyEditor = (props: SpotifyPlaybackProps) => {
 

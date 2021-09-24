@@ -1,11 +1,11 @@
-import { Cue, db, SpotifyCue } from "../electron/DB";
+import { Cue, db, SpotifyCue } from "../../electron/DB";
 import React, { useState } from "react"
-import { audioManager } from "./AudioManager";
-import { Application, BackButton, Content, CustomButton, Header, MenuColumn, Overlay } from './components';
+import { audioManager } from "../AudioManager";
+import { Application, BackButton, Content, CustomButton, Header, MenuColumn, Overlay } from '../components';
 import { MdAdd, MdMenu, MdPause, MdPlayArrow, MdSave } from "react-icons/md";
-import { SelectionContextInterface } from "./customInterfaces";
-import { Selector } from "./player/Selector";
-import { Group } from "./player/Group";
+import { SelectionContextInterface } from "../customInterfaces";
+import { Selector } from "./Selector";
+import { Group } from "./Group";
 
 export const SelectionContext = React.createContext<SelectionContextInterface>({
     selectionActive: false,

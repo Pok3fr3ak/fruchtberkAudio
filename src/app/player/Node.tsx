@@ -4,7 +4,7 @@ import { audioManager } from "../AudioManager";
 import { NodeProps } from "../customInterfaces";
 import { MdClear, MdPause, MdPlayArrow } from "react-icons/md";
 import { CustomButton } from "../components";
-import { SelectionContext } from "../Player";
+import { SelectionContext } from "./Player";
 
 const Node = (props: NodeProps) => {
     const selectedCues = props.selectedCues;

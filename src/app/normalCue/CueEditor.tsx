@@ -1,12 +1,12 @@
-import { db, Layer } from "../electron/DB";
+import { db, Layer } from "../../electron/DB";
 import { ipcRenderer } from "electron";
 import React, { useEffect, useState } from "react";
 import useResizeObserver from "use-resize-observer";
-import { audioManager } from "./AudioManager";
+import { audioManager } from "../AudioManager";
 import { Mixer } from "./Mixer";
 import { TimeStamp } from "./Timestamp";
 import { Track } from "./Track";
-import { Application, BackButton, Content, CustomButton, Header, MenuColumn, Overlay, ToolColumn } from './components';
+import { Application, BackButton, Content, CustomButton, Header, MenuColumn, Overlay, ToolColumn } from '../components';
 import { MdAdd, MdTune, MdDescription, MdZoomIn, MdZoomOut, MdPlayArrow, MdClear, MdPause } from 'react-icons/md';
 
 const CueEditor = (props: any) => {

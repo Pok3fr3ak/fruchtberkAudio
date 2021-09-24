@@ -1,4 +1,4 @@
-import { db, Layer } from "../electron/DB";
+import { db, Layer } from "../../electron/DB";
 import React, { useState } from "react"
 
 export const PropertiesWindow = (props: any) => {

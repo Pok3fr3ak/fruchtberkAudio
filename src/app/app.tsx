@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import './main.css';
 import { IpcRenderer } from 'electron';
-import { CueEditor } from './CueEditor';
-import { Player } from './Player';
+import { CueEditor } from './normalCue/CueEditor';
+import { Player } from './player/Player';
 import { ProjectSelector } from './ProjectSelector';
 import { Application, BackButton, Content, CueCard, CustomButton, DeleteButton, DeleteButtonToggle, Header, MenuColumn, Overlay, ToolColumn } from './components';
 import { MdAdd, MdFileDownload, MdArrowBack, MdFileUpload, MdClear, MdStorage } from 'react-icons/md';
 import { FaSpotify } from 'react-icons/fa'
-import { SpotifyCueEditor } from './SpotifyCueEditor';
+import { SpotifyCueEditor } from './spotifyCue/SpotifyCueEditor';
 
 declare global {
   interface Window {
