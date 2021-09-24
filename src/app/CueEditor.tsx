@@ -72,8 +72,6 @@ const CueEditor = (props: any) => {
     cue.setZoomScale(scale)
   }, [scale])
 
-
-
   return (
     <>
       <MenuColumn>

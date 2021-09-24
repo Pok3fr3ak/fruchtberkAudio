@@ -2,9 +2,13 @@ import React, { useEffect, useState } from "react";
 import { SpotifyLogin } from "./SpotifyLogin";
 import { SpotifyEditor } from "./SpotifyEditor";
 import { Application, BackButton, Content, Header, MenuColumn, Overlay } from "./components";
-import { ipcRenderer } from "electron";
+import { db } from "../electron/DB";
 
-const SpotifyCueEditor = () => {
+const SpotifyCueEditor = (props: any) => {
+
+    console.log(props.match.params.project, parseInt(props.match.params.spotifyCue));
+
+    const spotifyLayer = db.getSpotifyCue(props.match.params.project, props.match.params.spotifyCue)
 
     const [token, setToken] = useState('');
 
@@ -15,7 +19,7 @@ const SpotifyCueEditor = () => {
                 .then(res => res.json())
                 .then(data => {
                     console.log(data.access_token);
-                    
+
                     setToken(data.access_token);
                 })
         }
@@ -27,17 +31,14 @@ const SpotifyCueEditor = () => {
     return (
         <>
             <MenuColumn>
-                <BackButton link={`/`}/>
+                <BackButton link={`/project/${props.match.params.project}`} />
             </MenuColumn>
             <Application>
                 <Header>
-                    <h1>SPOTIFY CUE EDITOR</h1>
-                    <button onClick={()=>{
-                        ipcRenderer.send('newTokenPls')
-                    }}></button>
+                    <h1>{spotifyLayer.name}</h1>
                 </Header>
                 <Content>
-                    {(token === '') ? <SpotifyLogin /> : <SpotifyEditor token={token} />}
+                    {(token === '') ? <SpotifyLogin /> : <SpotifyEditor token={token} spotifyLayer={spotifyLayer}/>}
                 </Content>
             </Application>
             <Overlay>

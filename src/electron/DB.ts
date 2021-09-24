@@ -67,7 +67,7 @@ export class SpotifyCue{
         name: string,
         uri: string
     }>
-    songs: Array<string>
+    songs: Array<string>;
     id: number;
 
     constructor(name: string){
@@ -75,6 +75,9 @@ export class SpotifyCue{
         this.id = db !== undefined ? db.generateID() : 0;
         this.playlists = [];
         this.songs = [];
+
+        this.addPlaylist = this.addPlaylist;
+        this.addSong = this.addSong;
     }
 
     addPlaylist(name: string, spotifyURI: string){
@@ -281,12 +284,12 @@ class DB {
         }
     }
 
-    getSpotifyCue(project: string, id: number): SpotifyCue{
+    getSpotifyCue(project: string, id: string): SpotifyCue{
         const cueName = this.getProject(project)
 
         if(!cueName) throw ('Spotify Layer could not be found, because Cue could not be found or does not exist');
 
-        const spotifyLayer = cueName.spotifyLayers.find(x => x.id === id)
+        const spotifyLayer = cueName.spotifyLayers.find(x => x.id === parseInt(id))
 
         if(spotifyLayer){
             return spotifyLayer

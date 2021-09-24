@@ -2,13 +2,9 @@ import { Cue, SpotifyCue } from "../electron/DB"
 import React from "react"
 import { Link } from "react-router-dom"
 import { IconContext } from "react-icons"
-import { MdArrowBack, MdDeleteForever } from "react-icons/md"
-
-interface BackButtonProps {
-    link: string,
-    additional?: (...args: any[]) => any
-    [key: string]: any
-}
+import { MdArrowBack, MdDeleteForever, MdStorage } from "react-icons/md"
+import { FaSpotify } from "react-icons/fa"
+import { BackButtonProps, CueCardProps, CustomButtonProps, DeleteButtonProps, DeleteButtonToggleProps } from "./customInterfaces"
 
 const BackButton = (props: BackButtonProps) => {
     return (
@@ -28,14 +24,6 @@ const BackButton = (props: BackButtonProps) => {
     )
 }
 
-interface CueCardProps {
-    cue?: Cue,
-    spotifyCue?: SpotifyCue
-    optionalClass?: string
-    link?: boolean
-    linkto?: string,
-}
-
 const CueCard = (props: CueCardProps) => {
 
     const cardContent = () => {
@@ -45,7 +33,12 @@ const CueCard = (props: CueCardProps) => {
             const date = new Date(props.cue.changed)
             return (
                 <>
-                    <h2>{props.cue.name}</h2>
+                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: "space-between" }}>
+                        <h2>{props.cue.name}</h2>
+                        <MdStorage
+                            size="2em"
+                        />
+                    </div>
                     <p className="cueDescription">{props.cue.description}</p>
                     <p className="info">{`Last Changed: ${date.toLocaleDateString('de-DE')}, ${date.toLocaleTimeString('de-DE')}`}</p>
                 </>
@@ -55,12 +48,16 @@ const CueCard = (props: CueCardProps) => {
         if (props.spotifyCue !== undefined) {
             return (
                 <>
-                    <h2>{props.spotifyCue.name}</h2>
+                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: "space-between" }}>
+                        <h2>{props.spotifyCue.name}</h2>
+                        <FaSpotify
+                            size="2em"
+                        />
+                    </div>
                     <p className="info">{/* `Last Changed: ${date.toLocaleDateString('de-DE')}, ${date.toLocaleTimeString('de-DE')}` */}</p>
                 </>
             )
         }
-
     }
 
     return (
@@ -138,14 +135,6 @@ const Overlay = (props: any) => {
     )
 }
 
-interface CustomButtonProps {
-    class?: string
-    iconColor?: string
-    size?: string
-    onClick?: (...args: any[]) => any
-    [key: string]: any
-}
-
 const CustomButton = (props: CustomButtonProps) => {
     return (
         <button
@@ -159,12 +148,6 @@ const CustomButton = (props: CustomButtonProps) => {
     )
 }
 
-interface DeleteButtonToggleProps {
-    deleteMode: boolean,
-    setDeleteMode: (arg: boolean) => void
-    [key: string]: any
-}
-
 const DeleteButtonToggle = (props: DeleteButtonToggleProps) => {
     return (
         <CustomButton
@@ -176,11 +159,6 @@ const DeleteButtonToggle = (props: DeleteButtonToggleProps) => {
             <MdDeleteForever />
         </CustomButton>
     )
-}
-
-interface DeleteButtonProps {
-    deleteFunction: (arg: any) => any
-    [key: string]: any
 }
 
 const DeleteButton = (props: DeleteButtonProps) => {

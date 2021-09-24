@@ -29,7 +29,7 @@ const ProjectSelector = () => {
                       className=""
                     >
                       <h1>{x.name}</h1>
-                      <p>{x.cueList.length} Cues</p>
+                      <p>{x.cueList.length + x.spotifyLayers.length} Cues</p>
                     </Link>
                   </div>
                 )

@@ -222,6 +222,10 @@ label[for="description"] {
     margin-right: auto;
 }
 
+.ml-auto{
+    margin-left: auto;
+}
+
 .custom-button{
     display: flex;
     justify-content: center;
@@ -636,6 +640,22 @@ label[for="description"] {
                 }
             }
         }
+    }
+}
+
+.selectedPlaylist{
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    
+    div{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    img{
+        max-height: 450px;
     }
 }
 

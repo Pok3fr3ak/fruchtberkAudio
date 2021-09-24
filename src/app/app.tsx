@@ -1,5 +1,5 @@
 import { Cue, customStringify, db, SpotifyCue } from '../electron/DB';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import './main.css';
 import { IpcRenderer } from 'electron';
@@ -7,7 +7,7 @@ import { CueEditor } from './CueEditor';
 import { Player } from './Player';
 import { ProjectSelector } from './ProjectSelector';
 import { Application, BackButton, Content, CueCard, CustomButton, DeleteButton, DeleteButtonToggle, Header, MenuColumn, Overlay, ToolColumn } from './components';
-import { MdAdd, MdFileDownload, MdArrowBack, MdFileUpload, MdTune, MdMenu, MdDescription, MdDeleteForever, MdZoomIn, MdZoomOut, MdClear, MdStorage } from 'react-icons/md';
+import { MdAdd, MdFileDownload, MdArrowBack, MdFileUpload, MdClear, MdStorage } from 'react-icons/md';
 import { FaSpotify } from 'react-icons/fa'
 import { SpotifyCueEditor } from './SpotifyCueEditor';
 
@@ -199,7 +199,6 @@ const ProjectOverview = (props: any) => {
             }
             {
               db.getProject(props.match.params.project).spotifyLayers.map(spotifyCue => {
-                console.log(props.match.params.project, spotifyCue);
                 
                 return (
                   <CueCard
@@ -212,7 +211,6 @@ const ProjectOverview = (props: any) => {
                 )
               })
             }
-            <Link to={`/project/${props.match.params.project}/spotifyCue`}>SPOTIFY TEST</Link>
           </div>
         </Content>
       </Application>
@@ -269,7 +267,7 @@ const ProjectOverview = (props: any) => {
                     <figure>
                       <MdStorage />
                     </figure>
-                    <p>Ganz klassischer Layer</p>
+                    <p>Ganz klassische Cue</p>
                   </div>
                   <div onClick={() => {
                     setAddSpotify(true)
@@ -277,7 +275,7 @@ const ProjectOverview = (props: any) => {
                     <figure>
                       <FaSpotify />
                     </figure>
-                    <p>Spotify Layer</p>
+                    <p>Spotify Cue</p>
                   </div>
                 </div>
               </>

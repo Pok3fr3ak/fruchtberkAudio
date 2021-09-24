@@ -1,73 +1,54 @@
 import React, { useEffect, useState } from "react";
 import { MdAdd, MdClear } from "react-icons/md";
+import { db, SpotifyCue } from "../electron/DB";
 import { CustomButton } from "./components";
-
-interface SpotifyPlaybackProps {
-    token: string,
-    [key: string]: any
-}
-
-interface SpotifyData {
-    href: string,
-    items: Array<PlaylistData>,
-    limit: number,
-    next: any,
-    offset: number,
-    previous: any,
-    total: number
-}
-
-interface PlaylistData {
-    collaborative: boolean,
-    description: string,
-    external_urls: any
-    href: string,
-    id: string,
-    images: Array<{
-        height: number,
-        url: string,
-        width: number
-    }>,
-    name: string,
-    owner: {
-        display_name: string,
-        external_urls: any,
-        href: string,
-        id: string,
-        type: string,
-        uri: string
-    }
-    primaryColor: any,
-    public: boolean,
-    snapshot_id: string,
-    tracks: {
-        href: string,
-        total: number
-    },
-    type: string,
-    uri: string
-}
+import { SpotifyPlaybackProps, SpotifyData, PlaylistData } from "./customInterfaces";
 
 const SpotifyEditor = (props: SpotifyPlaybackProps) => {
 
     const [spotifyData, setSpotifyData] = useState<SpotifyData>(null);
     const [active, setActive] = useState(false);
     const [selectedPlaylist, setSelectedPlaylist] = useState<PlaylistData>();
+    const [offset, setOffset] = useState(0);
 
     useEffect(() => {
-        fetch(`https://api.spotify.com/v1/me/playlists`, {
+        fetch(`https://api.spotify.com/v1/me/playlists?limit=50`, {
             headers: {
                 'Authorization': `Bearer ${props.token}`
             }
         }).then(res => res.json()).then(data => {
-            console.log(data);
+            setOffset(offset => offset + 50);
             setSpotifyData(data)
         })
     }, [])
 
+
+    useEffect(() => {
+        if (props.token === undefined) return;
+        if (props.spotifyLayer.playlists.length === 0) return;
+        if (spotifyData !== null && spotifyData !== undefined) {
+            console.log('Searching if Playlist is set');
+
+            const previouslySelected = spotifyData.items.find(x => {
+                return x.uri === props.spotifyLayer.playlists[0].uri
+            })
+
+            if (previouslySelected !== undefined) setSelectedPlaylist(previouslySelected)
+        }
+
+
+    }, [spotifyData])
+
+    useEffect(() => {
+        if (selectedPlaylist !== undefined && selectedPlaylist !== null) {
+            console.log('Setting Playlist...');
+            props.spotifyLayer.addPlaylist(selectedPlaylist.name, selectedPlaylist.uri)
+            db.save();
+        }
+    }, [selectedPlaylist])
+
     return (
         <div>
-
             <>
                 {
                     spotifyData !== null ?
@@ -75,22 +56,23 @@ const SpotifyEditor = (props: SpotifyPlaybackProps) => {
                             {
                                 selectedPlaylist ?
                                     <>
+                                        <CustomButton
+                                            onClick={() => {
+                                                setSelectedPlaylist(null);
+                                            }}
+                                            size="2.5em"
+                                            class="ml-auto"
+                                        >
+                                            <MdClear />
+                                        </CustomButton>
                                         <div className="selectedPlaylist">
                                             <div>
-                                                <p>{selectedPlaylist.name}</p>
-                                                <CustomButton
-                                                    onClick={() => {
-                                                        setSelectedPlaylist(null);
-                                                    }}
-                                                    size="2.5em"
-                                                >
-                                                    <MdClear />
-                                                </CustomButton>
-                                            </div>
-                                            <div>
+                                                <h1>{selectedPlaylist.name}</h1>
                                                 <p>{selectedPlaylist.tracks.total} Tracks</p>
                                             </div>
-                                            <img src={selectedPlaylist.images[0].url} alt="" />
+                                            <div>
+                                                <img src={selectedPlaylist.images[0] ? selectedPlaylist.images[0].url : ''} alt="" />
+                                            </div>
                                         </div>
                                     </>
                                     :
@@ -107,17 +89,42 @@ const SpotifyEditor = (props: SpotifyPlaybackProps) => {
                             }
                             {
                                 active ?
-                                    spotifyData.items.map(x => {
-                                        return (
-                                            <p
-                                                onClick={() => {
-                                                    setSelectedPlaylist(x)
-                                                    setActive(false)
-                                                }}
-                                                style={{ color: "white" }}
-                                            >{x.name}</p>
-                                        )
-                                    })
+                                    <>{
+                                        spotifyData.items.map((x, i) => {
+                                            return (
+                                                <p
+                                                    key={`playlists-${i}`}
+                                                    onClick={() => {
+                                                        setSelectedPlaylist(x)
+                                                        setActive(false)
+                                                    }}
+                                                    style={{ color: "white" }}
+                                                >{x.name}</p>
+                                            )
+                                        })
+                                    }
+                                        <CustomButton
+                                            onClick={() => {
+                                                fetch(`https://api.spotify.com/v1/me/playlists?offset=${offset}&limit=50`, {
+                                                    headers: {
+                                                        'Authorization': `Bearer ${props.token}`
+                                                    }
+                                                }).then(res => res.json()).then((data: SpotifyData) => {
+                                                    setOffset(offset => offset + 50);
+                                                    let newData = spotifyData;
+                                                    data.items.forEach(x => {
+                                                        newData.items.push(x);
+                                                    })
+                                                    setSpotifyData(newData)
+                                                    setActive(false);
+                                                    setActive(true)
+                                                })
+                                            }}
+                                            class="text"
+                                        >
+                                            Load More
+                                        </CustomButton>
+                                    </>
                                     :
                                     <></>
                             }
