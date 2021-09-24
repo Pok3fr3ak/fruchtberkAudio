@@ -25,12 +25,12 @@ const SpotifyEditor = (props: SpotifyPlaybackProps) => {
 
     useEffect(() => {
         if (props.token === undefined) return;
-        if (props.spotifyLayer.playlists.length === 0) return;
+        if (props.spotifyLayer.playlist === undefined) return;
         if (spotifyData !== null && spotifyData !== undefined) {
             console.log('Searching if Playlist is set');
 
             const previouslySelected = spotifyData.items.find(x => {
-                return x.uri === props.spotifyLayer.playlists[0].uri
+                return x.uri === props.spotifyLayer.playlist.uri
             })
 
             if (previouslySelected !== undefined) setSelectedPlaylist(previouslySelected)

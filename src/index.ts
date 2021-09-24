@@ -6,7 +6,7 @@ import installExtention, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-insta
 import fs from 'fs';
 import { SpotifyLoginHandler } from './electron/SpotifyLoginHandler';
 import express from "express";
-import { Server } from 'socket.io'
+import { Server, Socket } from 'socket.io'
 import cors from 'cors';
 import fetch from 'node-fetch'
 import request from "request";
@@ -16,6 +16,7 @@ import dotenv from 'dotenv'
 // plugin that tells the Electron app where to look for the Webpack-bundled app code (depending on
 // whether you're running in development or production).
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
+let connectedSocket: Socket;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -89,7 +90,6 @@ app.on('ready', () => {
     appManager.deleteWindow('Login')
   })
 
-
   const frontendServer = express();
   const io = new Server(3500, {
     cors: {
@@ -113,7 +113,13 @@ app.on('ready', () => {
 
   })
 
+  ipcMain.on('AddedSpotifyPlayer', (ev, data)=>{
+    connectedSocket.emit('play', data)
+  })
+
+
   io.on('connection', (socket) => {
+    connectedSocket = socket;
     console.log('\n---SOCKET CONNECTED---\n');
 
     requestToken().then((token) => {

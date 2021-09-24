@@ -1,14 +1,17 @@
 import React, { useState, useContext, useEffect } from "react";
 import { db, Cue, SpotifyCue } from "../../electron/DB";
-import { audioManager } from "../AudioManager";
+import { audioManager } from "../AudioManager/AudioManager";
 import { NodeProps } from "../customInterfaces";
 import { MdClear, MdPause, MdPlayArrow } from "react-icons/md";
 import { CustomButton } from "../components";
 import { SelectionContext } from "./Player";
+import { ipcRenderer } from "electron";
 
 const Node = (props: NodeProps) => {
     const selectedCues = props.selectedCues;
     const setSelectedCues = props.setSelectedCues;
+
+
 
     const id: number = db.getID(`node-${props.index}`) || db.addID(`node-${props.index}`)
 
@@ -46,8 +49,9 @@ const Node = (props: NodeProps) => {
                 newCueArr[props.localIndex] = { cue: currCue, id: id }
                 setSelectedCues(newCueArr)
             } else if (currSpotifyCue !== null && currSpotifyCue !== undefined) {
+                let newCueArr = selectedCues;
+                newCueArr[props.localIndex] = { spotifyCue: currSpotifyCue, id: id }
                 setSpotifyCue(currSpotifyCue)
-
             }
             setCurrCue(null)
         }
@@ -83,7 +87,7 @@ const Node = (props: NodeProps) => {
                             </CustomButton>
                         </div>
 
-                        <p className="description">{cue ? cue.description : ''}</p>
+                        <p className="description">{cue ? cue.description : spotifyCue.playlist.name}</p>
 
                         <div className="footer">
                             <CustomButton
@@ -122,7 +126,6 @@ const Node = (props: NodeProps) => {
                         <p
                             style={{ flex: "1", textAlign: "center" }}
                             onClick={() => {
-                                /* selector(lID) */
                                 setSelected(props.index);
                                 setActive(!active);
                                 if (selectionActive === false && active === false) {

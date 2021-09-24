@@ -63,32 +63,24 @@ export class Layer {
 
 export class SpotifyCue{
     name: string;
-    playlists: Array<{
+    playlist: {
         name: string,
         uri: string
-    }>
-    songs: Array<string>;
+    }
     id: number;
 
     constructor(name: string){
         this.name = name;
         this.id = db !== undefined ? db.generateID() : 0;
-        this.playlists = [];
-        this.songs = [];
 
         this.addPlaylist = this.addPlaylist;
-        this.addSong = this.addSong;
     }
 
     addPlaylist(name: string, spotifyURI: string){
-        this.playlists.push({
+        this.playlist = {
             name: name,
             uri: spotifyURI
-        })
-    }
-
-    addSong(spotifyURI: string){
-        this.songs.push(spotifyURI)
+        }
     }
 }
 

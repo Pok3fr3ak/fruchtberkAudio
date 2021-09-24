@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { audioManager } from "../AudioManager";
+import { audioManager } from "../AudioManager/AudioManager";
 import { Node } from './Node'
 import { GroupProps, TriggerInfo, SelectedCues } from "../customInterfaces";
 import { Switcher } from "./Switcher";
@@ -39,15 +39,19 @@ const Group = (props: GroupProps) => {
             //console.log(currPlaying, selectedCues[currPlaying]);
             let cue = selectedCues[currPlaying];
             if (cue !== null) {
-                audioManager.addCueToPlayer(cue.cue, cue.id);
-                audioManager.playCue(cue.id);
+                if(cue.cue){
+                    audioManager.addCueToPlayer(cue.id, cue.cue);
+                    audioManager.playCue(cue.id);
+                } else if(cue.spotifyCue){
+                    audioManager.addCueToPlayer(cue.id, null, cue.spotifyCue);
+                    audioManager.playCue(cue.id);
+                }
             }
 
             if (triggerSwitch.lastPlaying !== null) {
                 let lastCue = selectedCues[triggerSwitch.lastPlaying];
                 if (lastCue !== null && lastCue !== undefined) audioManager.stopCue(lastCue.id)
             }
-
         }
     }, [currPlaying])
 
@@ -58,6 +62,7 @@ const Group = (props: GroupProps) => {
             setCurrPlaying(null)
         }
     }, [playing])
+    
 
     return (
         <div className="nodeGroup">

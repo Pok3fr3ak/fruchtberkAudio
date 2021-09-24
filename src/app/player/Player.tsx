@@ -1,11 +1,12 @@
 import { Cue, db, SpotifyCue } from "../../electron/DB";
-import React, { useState } from "react"
-import { audioManager } from "../AudioManager";
+import React, { useEffect, useState } from "react"
+import { audioManager } from "../AudioManager/AudioManager";
 import { Application, BackButton, Content, CustomButton, Header, MenuColumn, Overlay } from '../components';
 import { MdAdd, MdMenu, MdPause, MdPlayArrow, MdSave } from "react-icons/md";
 import { SelectionContextInterface } from "../customInterfaces";
 import { Selector } from "./Selector";
 import { Group } from "./Group";
+import { ipcRenderer } from "electron";
 
 export const SelectionContext = React.createContext<SelectionContextInterface>({
     selectionActive: false,
@@ -36,6 +37,24 @@ export const Player = (props: any) => {
 
     const selectionValue = { selectionActive, setSelectionActive, selected, setSelected, currCue, setCurrCue, currSpotifyCue, setCurrSpotifyCue };
 
+    const SpotifyCuePlayCall = (e: CustomEventInit) => {
+        console.log(props.currPlaying, props.localIndex, props.currPlaying === props.localIndex);
+
+        if (props.currPlaying === props.localIndex) {
+            console.log('CALLING TO PLAY');
+            ipcRenderer.send('AddedSpotifyPlayer', e.detail.uri)
+        }
+
+    }
+
+    useEffect(() => {
+        document.addEventListener('AddedSpotifyPlayer', SpotifyCuePlayCall)
+
+        return () => {
+            document.removeEventListener('AddedSpotifyPlayer', SpotifyCuePlayCall)
+        }
+    }, [])
+
     return (
         <>
             <MenuColumn>
@@ -58,7 +77,6 @@ export const Player = (props: any) => {
                                     if (playing === true) {
                                         audioManager.stopAll();
                                         console.log('Stopped all');
-
                                     }
                                 }}
                                 class="row"

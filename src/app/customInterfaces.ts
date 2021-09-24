@@ -1,9 +1,15 @@
-import { Cue, SpotifyCue } from "../electron/DB";
+import { Cue, Layer, SpotifyCue } from "../electron/DB";
+import { FilePlayer } from "./AudioManager/FilePlayer";
 
 interface BackButtonProps {
     link: string,
     additional?: (...args: any[]) => any
     [key: string]: any
+}
+
+interface Cache {
+    id: number,
+    layer: Layer
 }
 
 interface CueCardProps {
@@ -22,7 +28,6 @@ interface CustomButtonProps {
     [key: string]: any
 }
 
-
 interface DeleteButtonToggleProps {
     deleteMode: boolean,
     setDeleteMode: (arg: boolean) => void
@@ -34,20 +39,26 @@ interface DeleteButtonProps {
     [key: string]: any
 }
 
-interface SpotifyPlaybackProps {
-    token: string,
-    spotifyLayer: SpotifyCue
-    [key: string]: any
+interface DOMCache {
+    id: number,
+    layer: Layer,
+    player: FilePlayer
 }
 
-interface SpotifyData {
-    href: string,
-    items: Array<PlaylistData>,
-    limit: number,
-    next: any,
-    offset: number,
-    previous: any,
-    total: number
+type FadeDirection = 'in' | 'out'
+
+interface GroupProps {
+    index: number,
+    playing: boolean,
+}
+
+interface NodeProps {
+    index: number,
+    localIndex: number,
+    currPlaying: number | null,
+    setCurrPlaying: (arg: number | null) => void
+    selectedCues: Array<SelectedCues | null>,
+    setSelectedCues: (selCue: Array<SelectedCues | null>) => void
 }
 
 interface PlaylistData {
@@ -81,10 +92,10 @@ interface PlaylistData {
     uri: string
 }
 
-interface TriggerInfo {
-    trigger: boolean
-    lastPlaying: number | null,
-    toPlay: number,
+interface SelectedCues {
+    cue?: Cue,
+    spotifyCue?: SpotifyCue,
+    id: number
 }
 
 interface SelectionContextInterface {
@@ -98,23 +109,20 @@ interface SelectionContextInterface {
     setCurrSpotifyCue: (spotifyCue: SpotifyCue | null) => void
 }
 
-interface GroupProps {
-    index: number,
-    playing: boolean,
+interface SpotifyData {
+    href: string,
+    items: Array<PlaylistData>,
+    limit: number,
+    next: any,
+    offset: number,
+    previous: any,
+    total: number
 }
 
-interface SelectedCues {
-    cue: Cue,
-    id: number
-}
-
-interface NodeProps {
-    index: number,
-    localIndex: number,
-    currPlaying: number | null,
-    setCurrPlaying: (arg: number | null) => void
-    selectedCues: Array<SelectedCues | null>,
-    setSelectedCues: (selCue: Array<SelectedCues | null>) => void
+interface SpotifyPlaybackProps {
+    token: string,
+    spotifyLayer: SpotifyCue
+    [key: string]: any
 }
 
 interface SwitcherProps {
@@ -125,5 +133,10 @@ interface SwitcherProps {
     setTriggerSwitch: (obj: any) => void
 }
 
+interface TriggerInfo {
+    trigger: boolean
+    lastPlaying: number | null,
+    toPlay: number,
+}
 
-export { BackButtonProps, CueCardProps, CustomButtonProps, DeleteButtonToggleProps, DeleteButtonProps, SpotifyPlaybackProps, SpotifyData, PlaylistData, TriggerInfo, SelectionContextInterface, GroupProps, SelectedCues, NodeProps, SwitcherProps }
+export { BackButtonProps, CueCardProps, CustomButtonProps, DeleteButtonToggleProps, DeleteButtonProps, SpotifyPlaybackProps, SpotifyData, PlaylistData, TriggerInfo, SelectionContextInterface, GroupProps, SelectedCues, NodeProps, SwitcherProps, Cache, DOMCache, FadeDirection }

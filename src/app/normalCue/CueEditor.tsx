@@ -2,7 +2,7 @@ import { db, Layer } from "../../electron/DB";
 import { ipcRenderer } from "electron";
 import React, { useEffect, useState } from "react";
 import useResizeObserver from "use-resize-observer";
-import { audioManager } from "../AudioManager";
+import { audioManager } from "../AudioManager/AudioManager";
 import { Mixer } from "./Mixer";
 import { TimeStamp } from "./Timestamp";
 import { Track } from "./Track";
@@ -90,7 +90,7 @@ const CueEditor = (props: any) => {
               onClick={() => {
                 if (playing === false) {
                   setPlaying(true);
-                  audioManager.addCueToPlayer(cue, cue.id);
+                  audioManager.addCueToPlayer(cue.id, cue);
                   audioManager.playCue(cue.id);
                   //audioManager.on(`${cue.id}-stopped`, () => setPlaying(false))
                 } else {
