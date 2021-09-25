@@ -103,14 +103,13 @@ app.on('ready', () => {
 
   frontendServer.get('/', (req, res) => {
     console.log(app.getAppPath(), `${app.getAppPath()}/frontend/frontend.html`);
-
+    //res.send(`${app.getAppPath()} ${app.getAppPath()}/frontend/frontend.html`)
     res.sendFile(`${app.getAppPath()}/src/intermediate-player/index.html`);
   })
 
   frontendServer.listen(2500, () => {
     console.log('\nIntermediate Player hosted on :2500\n');
     console.log('\nSocket Endpoint hosted on :3500\n');
-
   })
 
   ipcMain.on('playSpotifyCue', (ev, data)=>{

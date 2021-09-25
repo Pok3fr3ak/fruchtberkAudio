@@ -1,5 +1,4 @@
-import { app, BrowserWindow } from 'electron';
-//import isDev from 'electron-is-dev'
+import { BrowserWindow } from 'electron';
 
 export class ProjectOverview {
   public readonly mainWindow: BrowserWindow;
